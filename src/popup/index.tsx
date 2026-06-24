@@ -53,7 +53,7 @@ export default function Popup() {
   }
 
   function openFeedback() {
-    chrome.tabs.create({ url: "mailto:hello@sylvoralabs.com" })
+    chrome.tabs.create({ url: "mailto:sylvoralabs@gmail.com" })
     window.close()
   }
 
@@ -85,7 +85,7 @@ export default function Popup() {
         <div style={{ height: "0.5px", background: "#F0EDE6", margin: "0 16px" }} />
         <MenuItem icon="ti-settings" label="Settings" sub="Capture, data & preferences" onClick={openSettings} />
         <div style={{ height: "0.5px", background: "#F0EDE6", margin: "0 16px" }} />
-        <MenuItem icon="ti-mail" label="Send feedback" sub="hello@sylvoralabs.com" onClick={openFeedback} />
+        <MenuItem icon="ti-mail" label="Send feedback" sub="sylvoralabs@gmail.com" onClick={openFeedback} />
       </div>
 
       {/* Footer */}
