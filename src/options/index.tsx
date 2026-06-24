@@ -277,8 +277,8 @@ export default function Options() {
           </div>
           <div style={row}>
             <div style={{ ...labelStyle, fontWeight: 400 }}>Feedback</div>
-            <a href="mailto:hello@sylvoralabs.com" style={{ fontSize: "12px", color: "#854F0B", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}>
-              ✉ hello@sylvoralabs.com
+            <a href="mailto:sylvoralabs@gmail.com" style={{ fontSize: "12px", color: "#854F0B", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}>
+              ✉ sylvoralabs@gmail.com
             </a>
           </div>
           <div style={rowLast}>
