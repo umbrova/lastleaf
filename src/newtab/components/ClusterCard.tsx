@@ -1,6 +1,6 @@
 import type { Cluster } from "~lib/clustering"
 
-const VISIBLE_TAGS = 3
+const VISIBLE_TAGS = 2
 
 interface Props {
   cluster: Cluster
@@ -24,25 +24,32 @@ export function ClusterCard({ cluster, selected, style, onClick }: Props) {
       style={{
         position: "absolute",
         width: "162px",
-        background: "var(--ll-card-bg, #ffffff)",
-        border: selected ? `1.5px solid ${color.dot}` : "0.5px solid var(--ll-border, rgba(136,135,128,0.2))",
+        background: "#ffffff",
+        border: selected
+          ? `1.5px solid ${color.dot}`
+          : "0.5px solid #E8E5DE",
         borderRadius: "10px",
         padding: "10px 12px",
         boxSizing: "border-box",
         cursor: "pointer",
         userSelect: "none",
-        transition: "border-color 0.15s",
+        transition: "border-color 0.15s, box-shadow 0.15s",
+        boxShadow: selected
+          ? `0 0 0 3px ${color.dot}18`
+          : "0 1px 3px rgba(0,0,0,0.04)",
         ...style
+      }}
+      onMouseEnter={e => {
+        if (!selected) (e.currentTarget as HTMLElement).style.borderColor = "#BA7517"
+      }}
+      onMouseLeave={e => {
+        if (!selected) (e.currentTarget as HTMLElement).style.borderColor = "#E8E5DE"
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "5px", minWidth: 0 }}>
           <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: color.dot, flexShrink: 0 }} />
-          <span style={{
-            fontSize: "12px", fontWeight: 500,
-            color: "var(--ll-text-primary, #2C2C2A)",
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
-          }}>
+          <span style={{ fontSize: "12px", fontWeight: 500, color: "#2C2C2A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {label}
           </span>
         </div>
@@ -51,7 +58,7 @@ export function ClusterCard({ cluster, selected, style, onClick }: Props) {
         </span>
       </div>
 
-      <div style={{ fontSize: "10px", color: "var(--ll-text-tertiary, #888780)", marginBottom: "6px" }}>
+      <div style={{ fontSize: "10px", color: "#888780", marginBottom: "6px" }}>
         {timeStr} browsing
       </div>
 
@@ -72,9 +79,8 @@ export function ClusterCard({ cluster, selected, style, onClick }: Props) {
             style={{
               fontSize: "10px", padding: "2px 6px", borderRadius: "20px",
               whiteSpace: "nowrap", flexShrink: 0, cursor: "pointer",
-              background: "var(--ll-surface, #F1EFE8)",
-              color: "var(--ll-text-secondary, #5F5E5A)",
-              border: "0.5px solid var(--ll-border-mid, rgba(136,135,128,0.3))"
+              background: "#F9F8F5", color: "#888780",
+              border: "0.5px solid #E0DDD6"
             }}
           >
             ···

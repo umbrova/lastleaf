@@ -127,8 +127,23 @@ export function buildClusters(tabs: TabRecord[]): Cluster[] {
     })
   }
 
-  // sort clusters by tab count descending
-  return clusters.sort((a, b) => b.tabs.length - a.tabs.length)
+  // Merge clusters with same label (can happen when category + keyword overlap)
+  const merged = new Map<string, Cluster>()
+  for (const cluster of clusters) {
+    const key = cluster.category
+    if (merged.has(key)) {
+      const existing = merged.get(key)!
+      existing.tabs = [...existing.tabs, ...cluster.tabs]
+      existing.totalTime += cluster.totalTime
+      // merge keywords, deduplicate
+      const kwSet = new Set([...existing.keywords, ...cluster.keywords])
+      existing.keywords = [...kwSet].slice(0, 8)
+    } else {
+      merged.set(key, { ...cluster })
+    }
+  }
+
+  return [...merged.values()].sort((a, b) => b.tabs.length - a.tabs.length)
 }
 
 export function formatTime(ms: number): string {

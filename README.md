@@ -2,7 +2,64 @@
 
 > Remember what you closed.
 
-A Chrome extension that captures closed tabs, groups them by topic, and surfaces them as an interactive graph on every new tab.
+A Chrome/Brave extension that quietly captures tabs you close, groups them by topic, and surfaces them as an interactive graph. Click the lastleaf icon in your toolbar to explore your tab graveyard.
+
+---
+
+## Tech stack
+
+- **Vite** + **CRXJS** — builds the Chrome MV3 extension
+- **React** + **TypeScript** — all UI pages
+- **Dexie.js** — IndexedDB wrapper for tab history storage
+- **compromise.js** — lightweight local NLP for keyword extraction
+- **Tabler Icons** — icon webfont used across all pages
+
+---
+
+## Project structure
+
+```
+lastleaf/
+├── public/
+│   └── assets/              # Extension icons (icon16.png, icon32.png, icon48.png, icon128.png)
+├── src/
+│   ├── background/
+│   │   └── index.ts         # Service worker — tab lifecycle, capture, badge count
+│   ├── newtab/
+│   │   ├── index.html       # Dashboard entry point
+│   │   ├── main.tsx         # React mount
+│   │   ├── index.tsx        # Dashboard root component
+│   │   ├── components/
+│   │   │   ├── Graph.tsx         # Canvas edges + cluster card positions + zoom
+│   │   │   ├── ClusterCard.tsx   # Individual cluster card
+│   │   │   ├── SidePanel.tsx     # Slide-in panel with tabs and topics
+│   │   │   ├── TabRow.tsx        # Expandable tab row with actions
+│   │   │   └── OnboardingHint.tsx # First-time hint overlay
+│   │   └── hooks/
+│   │       └── useClusters.ts    # Reads IndexedDB, builds clusters
+│   ├── options/
+│   │   ├── index.html       # Settings page entry point
+│   │   ├── main.tsx
+│   │   └── index.tsx        # Settings page
+│   ├── welcome/
+│   │   ├── index.html       # Onboarding page entry point
+│   │   ├── main.tsx
+│   │   └── index.tsx        # Welcome/onboarding page (shown on install)
+│   ├── popup/
+│   │   ├── index.html       # Popup entry point
+│   │   ├── main.tsx
+│   │   └── index.tsx        # Toolbar popup — stats + menu
+│   └── lib/
+│       ├── storage.ts        # Dexie IndexedDB schema + chrome.storage.local settings
+│       ├── clustering.ts     # Keyword extraction, topic scoring, cluster building
+│       ├── domains.ts        # Domain → category lookup table
+│       ├── compression.ts    # 90-day compression of old tabs to summaries
+│       └── analytics.ts      # Anonymous event tracking via Vercel proxy
+├── manifest.json             # Chrome MV3 manifest
+├── vite.config.ts            # Vite + CRXJS config
+├── tsconfig.json
+└── package.json
+```
 
 ---
 
@@ -16,71 +73,101 @@ npm install
 
 ### 2. Environment variables
 
-Copy `.env.example` to `.env.local` and fill in your Vercel analytics URL:
+Copy `.env.example` to `.env.local` and fill in your analytics URL (optional):
 
 ```bash
 cp .env.example .env.local
 ```
 
-### 3. Dev mode
+```
+PLASMO_PUBLIC_ANALYTICS_URL=https://your-vercel-project.vercel.app/api/lastleaf/event
+```
+
+### 3. Generate extension icons
+
+Open your browser console on any tab and paste:
+
+```js
+const sizes = [16,32,48,128]
+const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+  <rect width='100' height='100' rx='22' fill='#854F0B'/>
+  <g transform='translate(50,52) rotate(25)'>
+    <path d='M0 -44 Q38 -28 28 8 Q0 24 -28 8 Q-38 -18 0 -44 Z' fill='#FAC775'/>
+    <path d='M0 -38 Q-1 -14 -2 10' fill='none' stroke='#854F0B' stroke-width='5' stroke-linecap='round'/>
+    <path d='M-2 10 Q-4 22 -6 32' fill='none' stroke='#FAC775' stroke-width='4' stroke-linecap='round'/>
+  </g>
+</svg>`
+sizes.forEach(s => {
+  const canvas = document.createElement('canvas')
+  canvas.width = s; canvas.height = s
+  const ctx = canvas.getContext('2d')
+  const img = new Image()
+  const blob = new Blob([svg], {type:'image/svg+xml'})
+  const url = URL.createObjectURL(blob)
+  img.onload = () => {
+    ctx.drawImage(img,0,0,s,s)
+    const a = document.createElement('a')
+    a.href = canvas.toDataURL('image/png')
+    a.download = `icon${s}.png`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+  img.src = url
+})
+```
+
+Copy the downloaded PNGs to `public/assets/`.
+
+### 4. Build
+
+```bash
+npm run build
+```
+
+### 5. Load in Chrome/Brave
+
+1. Go to `chrome://extensions` or `brave://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked**
+4. Select the `dist/` folder
+
+---
+
+## Development
 
 ```bash
 npm run dev
 ```
 
-Then open Chrome → `chrome://extensions` → Enable Developer Mode → Load Unpacked → select the `.plasmo/chrome-mv3-dev` folder.
-
-### 4. Build for production
-
-```bash
-npm run build
-npm run package
-```
+Watches for file changes and rebuilds automatically. Reload the extension in `chrome://extensions` after each build.
 
 ---
 
-## Project structure
+## Settings
 
-```
-src/
-├── background/index.ts      # Service worker — tab lifecycle
-├── contents/toast.tsx       # Rescue toast content script
-├── newtab/                  # Dashboard (new tab override)
-│   ├── components/          # Graph, ClusterCard, SidePanel, TabRow
-│   └── hooks/               # useClusters, useStorage
-├── welcome/index.tsx        # Onboarding page (shown on install)
-├── options/index.tsx        # Settings page
-└── lib/
-    ├── storage.ts           # Dexie IndexedDB layer
-    ├── clustering.ts        # NLP keyword extraction + clustering
-    ├── domains.ts           # Domain → category lookup
-    ├── compression.ts       # 90-day compression to summaries
-    └── analytics.ts         # Vercel proxy analytics
+All settings are stored in `chrome.storage.local` and shared across all extension contexts:
 
-vercel-api/
-└── api/lastleaf/event.ts    # Vercel edge function → Upstash Redis
-```
+| Setting | Default | Description |
+|---|---|---|
+| `minTabTime` | 60s | Minimum time a tab must be open to be captured |
+| `retentionDays` | 90 | Days to keep full tab records before compressing |
+| `excludedDomains` | `[]` | Domains never captured |
 
 ---
 
-## Vercel analytics setup
+## Analytics (optional)
 
-1. Deploy `vercel-api/` to your existing Vercel project
-2. Add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` to Vercel env vars
-3. Set `PLASMO_PUBLIC_ANALYTICS_URL` in `.env.local` to your Vercel endpoint
+Anonymous usage counters via Upstash Redis, proxied through a Vercel edge function in the private `lastleaf-server` repo. Events tracked: `install`, `tab_buried`, `tab_rescued`, `dau`. No PII collected.
 
 ---
 
-## Build order
+## Privacy
 
-1. `src/lib/storage.ts` — get data layer working, test with Dexie
-2. `src/background/index.ts` — verify tabs are being captured
-3. `src/lib/clustering.ts` — check clusters look right
-4. `src/newtab/` — build dashboard against real data
-5. `src/contents/toast.tsx` — add toast last
-6. `src/options/` + `src/welcome/` — settings and onboarding
-7. `vercel-api/` — deploy analytics proxy
+- All tab data stored locally in IndexedDB on your device
+- No page content ever read — only tab titles and URLs
+- Cloud sync and analytics are optional and transparent
+- Excluded domains list lets you block sensitive sites
 
 ---
 
-Made by Sylvora Labs · hello@sylvoralabs.com
+Made by **Sylvora Labs** · hello@sylvoralabs.com

@@ -62,26 +62,31 @@ export const db = new LastleafDB()
 // ── Settings helpers ──────────────────────────────────────────────
 
 export const DEFAULT_SETTINGS = {
-  toastEnabled:   true,
-  toastDuration:  3,       // seconds
-  minTabTime:     60,      // seconds
-  retentionDays:  90,
+  minTabTime:      60,      // seconds
+  retentionDays:   90,
   excludedDomains: [] as string[]
 }
 
 export type Settings = typeof DEFAULT_SETTINGS
 
 export async function getSettings(): Promise<Settings> {
-  const rows = await db.settings.toArray()
-  const map = Object.fromEntries(rows.map(r => [r.key, r.value]))
-  return { ...DEFAULT_SETTINGS, ...map } as Settings
+  return new Promise((resolve) => {
+    chrome.storage.local.get("lastleaf_settings", (result) => {
+      const saved = result.lastleaf_settings ?? {}
+      resolve({ ...DEFAULT_SETTINGS, ...saved } as Settings)
+    })
+  })
 }
 
 export async function setSetting<K extends keyof Settings>(
   key: K,
   value: Settings[K]
 ): Promise<void> {
-  await db.settings.put({ key, value })
+  const current = await getSettings()
+  const next = { ...current, [key]: value }
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ lastleaf_settings: next }, resolve)
+  })
 }
 
 // ── Tab record helpers ────────────────────────────────────────────

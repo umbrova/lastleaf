@@ -6,14 +6,74 @@ import { OnboardingHint } from "./components/OnboardingHint"
 import type { Cluster } from "~lib/clustering"
 import { formatTime } from "~lib/clustering"
 
-const LeafLogo = () => (
-  <svg width="20" height="20" viewBox="0 0 680 680">
-    <g transform="translate(340,340) rotate(30)">
-      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#BA7517" opacity="0.22"/>
-      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#854F0B"/>
-      <path d="M6 -80 Q4 -50 2 -16" fill="none" stroke="#FAC775" strokeWidth="10" strokeLinecap="round"/>
-      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#854F0B" strokeWidth="12" strokeLinecap="round"/>
+const LeafLogo = ({ size = 28 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100">
+    <g transform="translate(50,52) rotate(25)">
+      <path d="M0 -44 Q38 -28 28 8 Q0 24 -28 8 Q-38 -18 0 -44 Z" fill="#BA7517"/>
+      <path d="M0 -38 Q-1 -14 -2 10" fill="none" stroke="#FAC775" strokeWidth="4" strokeLinecap="round"/>
+      <path d="M-1 -22 Q-14 -12 -20 -2" fill="none" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M-1 -8 Q12 -2 16 6" fill="none" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M-2 12 Q-4 22 -6 30" fill="none" stroke="#BA7517" strokeWidth="3.5" strokeLinecap="round"/>
     </g>
+    <g transform="translate(50,52) rotate(25)" opacity="0.22">
+      <path d="M12 -48 Q50 -32 40 4 Q12 20 -16 4 Q-26 -22 12 -48 Z" fill="#EF9F27"/>
+    </g>
+  </svg>
+)
+
+function exportCSV(clusters: any[]) {
+  const rows = [["Title", "URL", "Domain", "Cluster", "Time Spent (mins)", "Date Closed"]]
+  clusters.forEach(cluster => {
+    cluster.tabs.forEach((tab: any) => {
+      const mins = Math.round(tab.timeSpent / 60000)
+      const date = new Date(tab.closedAt).toLocaleString()
+      rows.push([
+        `"${(tab.title || tab.url).replace(/"/g, '""')}"`,
+        `"${tab.url.replace(/"/g, '""')}"`,
+        tab.domain,
+        `"${cluster.label.replace(/"/g, '""')}"`,
+        String(mins),
+        `"${date}"`
+      ])
+    })
+  })
+  const csv = rows.map(r => r.join(",")).join("\n")
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `lastleaf-export-${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+const RefreshIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
+    <polyline points="23 4 23 10 17 10"/>
+    <polyline points="1 20 1 14 7 14"/>
+    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+  </svg>
+)
+
+const DownloadIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+)
+
+const GearIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+)
+
+const MailIcon = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
   </svg>
 )
 
@@ -36,76 +96,100 @@ export default function NewTab() {
 
   return (
     <div style={{
-      display: "flex",
-      flexDirection: "column",
-      height: "100vh",
-      background: "var(--ll-bg, #FAFAF9)",
+      display: "flex", flexDirection: "column", height: "100vh",
+      background: "#ffffff",
       fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif",
       overflow: "hidden"
     }}>
+
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 16px",
-        borderBottom: "0.5px solid var(--ll-border, rgba(136,135,128,0.2))",
-        background: "var(--ll-card-bg, #ffffff)",
+        padding: "11px 16px",
+        borderBottom: "0.5px solid #E8E5DE",
+        background: "#ffffff",
         flexShrink: 0
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <LeafLogo />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <LeafLogo size={32} />
           <span style={{
-            fontSize: "15px", fontWeight: 400, fontFamily: "Georgia, serif",
-            fontStyle: "italic", color: "var(--ll-text-primary, #2C2C2A)"
+            fontSize: "18px", fontWeight: 400,
+            fontFamily: "Georgia, serif", fontStyle: "italic",
+            color: "#854F0B"
           }}>
             lastleaf
           </span>
         </div>
 
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-          <span style={{ fontSize: "12px", color: "var(--ll-text-tertiary, #888780)" }}>
-            <span style={{ fontWeight: 500, color: "var(--ll-text-primary, #2C2C2A)" }}>{totalTabs}</span> tabs buried
+          <span style={{ fontSize: "12px", color: "#888780" }}>
+            <span style={{ fontWeight: 500, color: "#2C2C2A" }}>{totalTabs}</span> tabs buried
           </span>
-          <span style={{ fontSize: "12px", color: "var(--ll-text-tertiary, #888780)" }}>
-            <span style={{ fontWeight: 500, color: "var(--ll-text-primary, #2C2C2A)" }}>{clusters.length}</span> clusters
+          <span style={{ fontSize: "12px", color: "#888780" }}>
+            <span style={{ fontWeight: 500, color: "#2C2C2A" }}>{clusters.length}</span> clusters
           </span>
-          <span style={{ fontSize: "12px", color: "var(--ll-text-tertiary, #888780)" }}>
-            <span style={{ fontWeight: 500, color: "var(--ll-text-primary, #2C2C2A)" }}>{formatTime(totalTime)}</span> total
+          <span style={{ fontSize: "12px", color: "#888780" }}>
+            <span style={{ fontWeight: 500, color: "#2C2C2A" }}>{formatTime(totalTime)}</span> total
           </span>
+          <button
+            onClick={reload}
+            title="Refresh dashboard"
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#BA7517", display: "flex", alignItems: "center", padding: 0 }}
+          >
+            <RefreshIcon />
+          </button>
+          {clusters.length > 0 && (
+            <button
+              onClick={() => exportCSV(clusters)}
+              title="Export to CSV"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#BA7517", display: "flex", alignItems: "center", padding: 0 }}
+            >
+              <DownloadIcon />
+            </button>
+          )}
           <a
-            href={chrome.runtime.getURL("tabs/options.html")}
-            style={{ color: "var(--ll-text-tertiary, #888780)", display: "flex", alignItems: "center" }}
+            href={chrome.runtime.getURL("src/options/index.html")}
+            style={{ color: "#BA7517", display: "flex", alignItems: "center" }}
             title="Settings"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>
+            <GearIcon />
           </a>
         </div>
       </div>
 
-      {/* Main area */}
+      {/* Main */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative" }}>
-
         {loading ? (
-          <div style={{
-            flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--ll-text-tertiary, #888780)", fontSize: "13px"
-          }}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#B4B2A9", fontSize: "13px" }}>
             Loading your graveyard...
           </div>
         ) : clusters.length === 0 ? (
-          <div style={{
-            flex: 1, display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center", gap: "10px",
-            color: "var(--ll-text-tertiary, #888780)"
-          }}>
-            <LeafLogo />
-            <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--ll-text-primary, #2C2C2A)" }}>
-              No tabs buried yet
-            </div>
-            <div style={{ fontSize: "12px", lineHeight: 1.6, textAlign: "center", maxWidth: "260px" }}>
-              Browse normally — lastleaf will capture tabs you close after 1 minute.
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <svg width="260" height="200" viewBox="0 0 680 360" style={{ opacity: 0.9 }}>
+              <g transform="translate(340,155) rotate(30)">
+                <path d="M40 -120 Q130 -70 100 20 Q40 55 -20 20 Q-70 -50 40 -120 Z" fill="#EF9F27" opacity="0.08"/>
+                <path d="M28 -110 Q115 -60 88 18 Q28 52 -32 18 Q-80 -44 28 -110 Z" fill="#BA7517" opacity="0.14"/>
+                <path d="M28 -100 Q25 -40 22 22" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round" opacity="0.2"/>
+                <path d="M27 -70 Q8 -52 -2 -36" fill="none" stroke="#BA7517" strokeWidth="1" strokeLinecap="round" opacity="0.15"/>
+                <path d="M27 -44 Q46 -32 52 -18" fill="none" stroke="#BA7517" strokeWidth="1" strokeLinecap="round" opacity="0.15"/>
+                <path d="M22 24 Q16 44 10 58" fill="none" stroke="#BA7517" strokeWidth="2" strokeLinecap="round" opacity="0.15"/>
+              </g>
+              <g transform="translate(210,100) rotate(20)" opacity="0.18">
+                <path d="M8 -28 Q26 -16 20 4 Q8 12 -4 4 Q-14 -10 8 -28 Z" fill="#BA7517"/>
+              </g>
+              <g transform="translate(470,120) rotate(-15)" opacity="0.14">
+                <path d="M6 -22 Q20 -12 15 4 Q6 10 -3 4 Q-10 -8 6 -22 Z" fill="#BA7517"/>
+              </g>
+              <g transform="translate(260,240) rotate(35)" opacity="0.1">
+                <path d="M5 -18 Q16 -10 12 3 Q5 8 -2 3 Q-8 -6 5 -18 Z" fill="#BA7517"/>
+              </g>
+              <g transform="translate(430,220) rotate(-25)" opacity="0.12">
+                <path d="M7 -24 Q22 -14 17 5 Q7 11 -3 5 Q-12 -9 7 -24 Z" fill="#BA7517"/>
+              </g>
+            </svg>
+            <div style={{ fontSize: "14px", fontWeight: 500, color: "#2C2C2A", marginTop: "4px" }}>No tabs buried yet</div>
+            <div style={{ fontSize: "12px", color: "#888780", lineHeight: 1.7, textAlign: "center", maxWidth: "280px", marginTop: "4px" }}>
+              Browse normally — lastleaf captures tabs you close after your minimum time threshold.
             </div>
           </div>
         ) : (
@@ -124,29 +208,20 @@ export default function NewTab() {
             {totalTabs > 0 && <OnboardingHint />}
           </>
         )}
-
       </div>
 
       {/* Footer */}
       <div style={{
-        padding: "8px 16px",
-        borderTop: "0.5px solid var(--ll-border, rgba(136,135,128,0.2))",
-        background: "var(--ll-card-bg, #ffffff)",
+        padding: "7px 16px",
+        borderTop: "0.5px solid #E8E5DE",
+        background: "#ffffff",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         flexShrink: 0
       }}>
-        <span style={{ fontSize: "11px", color: "var(--ll-text-tertiary, #888780)" }}>
-          © {new Date().getFullYear()} Sylvora Labs
-        </span>
-        <a
-          href="mailto:hello@sylvoralabs.com"
-          style={{ fontSize: "11px", color: "var(--ll-text-tertiary, #888780)", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-          Feedback
+        <span style={{ fontSize: "11px", color: "#B4B2A9" }}>© {new Date().getFullYear()} Sylvora Labs</span>
+        <a href="mailto:hello@sylvoralabs.com"
+          style={{ fontSize: "11px", color: "#BA7517", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}>
+          <MailIcon /> Feedback
         </a>
       </div>
     </div>
