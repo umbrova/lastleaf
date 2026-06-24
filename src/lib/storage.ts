@@ -62,10 +62,8 @@ export const db = new LastleafDB()
 // ── Settings helpers ──────────────────────────────────────────────
 
 export const DEFAULT_SETTINGS = {
-  toastEnabled:   true,
-  toastDuration:  3,       // seconds
-  minTabTime:     60,      // seconds
-  retentionDays:  90,
+  minTabTime:      60,      // seconds
+  retentionDays:   90,
   excludedDomains: [] as string[]
 }
 

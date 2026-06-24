@@ -131,6 +131,16 @@ export default function Options() {
           <span style={{ fontSize: "13px", color: "#B4B2A9", marginLeft: "2px" }}>/ settings</span>
         </div>
 
+        {/* Quick nav */}
+        <div style={{ marginBottom: "20px" }}>
+          <button
+            onClick={() => chrome.tabs.create({ url: chrome.runtime.getURL("src/newtab/index.html") })}
+            style={{ fontSize: "13px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#854F0B", fontFamily: "inherit", textDecoration: "underline", textUnderlineOffset: "2px" }}
+          >
+            Open Dashboard
+          </button>
+        </div>
+
         {/* Capture */}
         <div style={card}>
           <div style={sectionLabel}>CAPTURE</div>
@@ -182,38 +192,6 @@ export default function Options() {
               <input ref={fileRef} type="file" accept=".csv,.txt" style={{ display: "none" }} onChange={handleCSVUpload} />
               {saveMsg && <span style={{ fontSize: "12px", color: "#1D9E75" }}>{saveMsg}</span>}
             </div>
-          </div>
-        </div>
-
-        {/* Toast */}
-        <div style={card}>
-          <div style={sectionLabel}>TOAST</div>
-
-          <div style={row}>
-            <div>
-              <div style={labelStyle}>Show rescue toast</div>
-              <div style={subStyle}>Brief notification when a tab is buried</div>
-            </div>
-            <Toggle on={settings.toastEnabled} onToggle={() => update("toastEnabled", !settings.toastEnabled)} />
-          </div>
-
-          <div style={{ ...rowLast, opacity: settings.toastEnabled ? 1 : 0.4, pointerEvents: settings.toastEnabled ? "auto" : "none" }}>
-            <div>
-              <div style={labelStyle}>Toast duration</div>
-              <div style={subStyle}>How long before it auto-dismisses</div>
-            </div>
-            <select
-              value={String(settings.toastDuration)}
-              onChange={e => update("toastDuration", parseInt(e.target.value))}
-              style={dd}
-            >
-              <option value="1">1 second</option>
-              <option value="2">2 seconds</option>
-              <option value="3">3 seconds</option>
-              <option value="5">5 seconds</option>
-              <option value="8">8 seconds</option>
-              <option value="10">10 seconds</option>
-            </select>
           </div>
         </div>
 
@@ -293,11 +271,20 @@ export default function Options() {
             <div style={{ ...labelStyle, fontWeight: 400 }}>Made by</div>
             <div style={subStyle}>Sylvora Labs</div>
           </div>
-          <div style={rowLast}>
+          <div style={row}>
             <div style={{ ...labelStyle, fontWeight: 400 }}>Feedback</div>
             <a href="mailto:hello@sylvoralabs.com" style={{ fontSize: "12px", color: "#854F0B", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}>
               ✉ hello@sylvoralabs.com
             </a>
+          </div>
+          <div style={rowLast}>
+            <div style={{ ...labelStyle, fontWeight: 400 }}>Onboarding guide</div>
+            <button
+              onClick={() => chrome.tabs.create({ url: chrome.runtime.getURL("src/welcome/index.html") })}
+              style={{ fontSize: "12px", color: "#854F0B", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline", textUnderlineOffset: "2px", padding: 0 }}
+            >
+              View guide →
+            </button>
           </div>
         </div>
 

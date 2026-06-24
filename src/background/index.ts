@@ -129,34 +129,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   await trackEvent("tab_buried")
   await updateBadgeCount()
 
-  if (settings.toastEnabled) {
-    // Try to send toast to all tabs with content script — broadest coverage
-    const allTabs = await chrome.tabs.query({ currentWindow: true })
-    const toastPayload = {
-      type: "SHOW_TOAST",
-      title: meta.title || meta.url,
-      url: meta.url,
-      tabId,
-      duration: settings.toastDuration * 1000
-    }
 
-    let sent = false
-    for (const t of allTabs) {
-      if (!t.id) continue
-      if (!t.url || t.url.startsWith("chrome://") || t.url.startsWith("chrome-extension://")) continue
-      try {
-        await chrome.tabs.sendMessage(t.id, toastPayload)
-        sent = true
-        break // send to first available tab that responds
-      } catch {
-        // content script not injected on this tab yet — try next
-        continue
-      }
-    }
-
-    if (!sent) {
-    }
-  }
 })
 
 // ── Badge count ───────────────────────────────────────────────────
@@ -181,10 +154,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "RESCUE_TAB") {
     chrome.tabs.create({ url: message.url })
     trackEvent("tab_rescued")
-    sendResponse({ ok: true })
-  }
-  if (message.type === "TOAST_DISMISSED") {
-    trackEvent("toast_dismissed")
     sendResponse({ ok: true })
   }
   return true

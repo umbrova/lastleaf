@@ -1,39 +1,13 @@
-import { useState } from "react"
-import { setSetting, DEFAULT_SETTINGS } from "~lib/storage"
-
 const LeafLogo = () => (
   <svg width="44" height="44" viewBox="0 0 680 680">
     <g transform="translate(340,340) rotate(30)">
-      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#BA7517" opacity="0.22" />
-      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#854F0B" />
+      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#EF9F27" opacity="0.3" />
+      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#BA7517" />
       <path d="M6 -80 Q4 -50 2 -16" fill="none" stroke="#FAC775" strokeWidth="10" strokeLinecap="round" />
-      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#854F0B" strokeWidth="14" strokeLinecap="round" />
+      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#BA7517" strokeWidth="12" strokeLinecap="round" />
     </g>
   </svg>
 )
-
-const dd: React.CSSProperties = {
-  fontSize: "13px", padding: "6px 10px", borderRadius: "7px",
-  border: "0.5px solid #E0DDD6", background: "#ffffff",
-  color: "#2C2C2A", cursor: "pointer", flexShrink: 0,
-  outline: "none", appearance: "none",
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888780' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
-  backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center",
-  paddingRight: "28px"
-}
-
-const row: React.CSSProperties = {
-  display: "flex", alignItems: "center", justifyContent: "space-between",
-  padding: "13px 0", borderBottom: "0.5px solid #F0EDE6", gap: "16px"
-}
-
-const rowLast: React.CSSProperties = {
-  display: "flex", alignItems: "center", justifyContent: "space-between",
-  padding: "13px 0", gap: "16px"
-}
-
-const label: React.CSSProperties = { fontSize: "13px", fontWeight: 500, color: "#2C2C2A" }
-const sub: React.CSSProperties = { fontSize: "12px", color: "#888780", marginTop: "2px" }
 
 const card: React.CSSProperties = {
   background: "#ffffff", borderRadius: "12px",
@@ -56,35 +30,14 @@ const stepIcon: React.CSSProperties = {
   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
 }
 
-const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
-  <div onClick={onToggle} style={{ width: "36px", height: "20px", borderRadius: "10px", background: on ? "#854F0B" : "#D3D1C7", position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s" }}>
-    <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: on ? "#FAC775" : "#fff", position: "absolute", top: "3px", left: on ? "18px" : "3px", transition: "left 0.15s" }} />
-  </div>
-)
+const labelStyle: React.CSSProperties = { fontSize: "13px", fontWeight: 500, color: "#2C2C2A" }
+const subStyle: React.CSSProperties = { fontSize: "12px", color: "#888780", marginTop: "2px", lineHeight: 1.6 }
+const sectionLabel: React.CSSProperties = { fontSize: "11px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.6px", marginBottom: "12px" }
 
 export default function Welcome() {
-  const [toastEnabled, setToastEnabled] = useState(DEFAULT_SETTINGS.toastEnabled)
-  const [toastDuration, setToastDuration] = useState("3")
-  const [minTabTime, setMinTabTime] = useState("60")
-  const [retention, setRetention] = useState("90")
-  const [done, setDone] = useState(false)
-
-  async function handleStart() {
-    await setSetting("toastEnabled", toastEnabled)
-    await setSetting("toastDuration", parseInt(toastDuration))
-    await setSetting("minTabTime", parseInt(minTabTime))
-    await setSetting("retentionDays", parseInt(retention) || 0)
-    setDone(true)
-    window.close()
+  function openSettings() {
+    chrome.tabs.create({ url: chrome.runtime.getURL("src/options/index.html") })
   }
-
-  if (done) return (
-    <div style={{ background: "#F9F8F5", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif" }}>
-      <div style={{ textAlign: "center", color: "#854F0B", fontFamily: "Georgia, serif", fontSize: "20px", fontStyle: "italic" }}>
-        lastleaf is watching.
-      </div>
-    </div>
-  )
 
   return (
     <div style={{ background: "#F9F8F5", minHeight: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif" }}>
@@ -106,94 +59,94 @@ export default function Welcome() {
 
         {/* How it works */}
         <div style={card}>
-          <div style={{ fontSize: "11px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.6px", marginBottom: "4px" }}>HOW IT WORKS</div>
+          <div style={sectionLabel}>HOW IT WORKS</div>
           <div style={step}>
             <div style={stepIcon}><span style={{ fontSize: "15px" }}>👁</span></div>
             <div>
-              <div style={label}>lastleaf watches your tabs silently</div>
-              <div style={sub}>Any tab open longer than your threshold is tracked. Nothing leaves your device.</div>
+              <div style={labelStyle}>lastleaf watches your tabs silently</div>
+              <div style={subStyle}>Any tab open longer than your minimum time threshold gets captured. Everything stays on your device — nothing is sent to any server.</div>
             </div>
           </div>
           <div style={step}>
             <div style={stepIcon}><span style={{ fontSize: "15px" }}>🍂</span></div>
             <div>
-              <div style={label}>Closed tabs go to the graveyard</div>
-              <div style={sub}>A brief toast appears. Rescue it or let it rest.</div>
+              <div style={labelStyle}>Closed tabs go to the graveyard</div>
+              <div style={subStyle}>Tabs are automatically grouped by topic and session. Your browsing history becomes a personal knowledge map.</div>
             </div>
           </div>
           <div style={stepLast}>
             <div style={stepIcon}><span style={{ fontSize: "15px" }}>🗺</span></div>
             <div>
-              <div style={label}>Open the dashboard to explore</div>
-              <div style={sub}>Clusters of related tabs connected by session — click the lastleaf icon anytime.</div>
+              <div style={labelStyle}>Click the lastleaf icon to explore</div>
+              <div style={subStyle}>Open the dashboard anytime from the toolbar. Click any cluster card to see the tabs inside — reopen or bury them.</div>
             </div>
           </div>
         </div>
 
         {/* Permissions */}
         <div style={card}>
-          <div style={{ fontSize: "11px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.6px", marginBottom: "4px" }}>PERMISSIONS — WHY WE NEED THEM</div>
-          {[
-            { icon: "🗂", title: "Tabs", desc: "To know when tabs open and close, and how long they were open." },
-            { icon: "💾", title: "Storage", desc: "To save your tab history locally on your device. Nothing goes to any server." },
-          ].map((p, i, arr) => (
-            <div key={p.title} style={i < arr.length - 1 ? step : stepLast}>
-              <div style={stepIcon}><span style={{ fontSize: "14px" }}>{p.icon}</span></div>
-              <div><div style={label}>{p.title}</div><div style={sub}>{p.desc}</div></div>
+          <div style={sectionLabel}>PERMISSIONS — WHY WE NEED THEM</div>
+          <div style={step}>
+            <div style={stepIcon}><span style={{ fontSize: "14px" }}>🗂</span></div>
+            <div>
+              <div style={labelStyle}>Tabs</div>
+              <div style={subStyle}>To know when tabs open and close, and how long they were open.</div>
             </div>
-          ))}
+          </div>
+          <div style={step}>
+            <div style={stepIcon}><span style={{ fontSize: "14px" }}>💾</span></div>
+            <div>
+              <div style={labelStyle}>Storage</div>
+              <div style={subStyle}>To save your tab history locally on your device. Nothing goes to any server.</div>
+            </div>
+          </div>
+          <div style={stepLast}>
+            <div style={stepIcon}><span style={{ fontSize: "14px" }}>🔒</span></div>
+            <div>
+              <div style={labelStyle}>Privacy first</div>
+              <div style={subStyle}>All data stays on your machine. lastleaf never reads page content — only tab titles and URLs.</div>
+            </div>
+          </div>
         </div>
 
-        {/* Quick settings */}
+        {/* Tips */}
         <div style={card}>
-          <div style={{ fontSize: "11px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.6px", marginBottom: "2px" }}>QUICK SETTINGS</div>
-          <div style={{ fontSize: "12px", color: "#888780", marginBottom: "14px" }}>Sensible defaults set — change anytime from settings.</div>
-
-          <div style={row}>
-            <div><div style={label}>Rescue toast</div><div style={sub}>Show a notification when a tab is buried</div></div>
-            <Toggle on={toastEnabled} onToggle={() => setToastEnabled(v => !v)} />
+          <div style={sectionLabel}>TIPS</div>
+          <div style={step}>
+            <div style={stepIcon}><span style={{ fontSize: "14px" }}>⏱</span></div>
+            <div>
+              <div style={labelStyle}>Default capture threshold is 1 minute</div>
+              <div style={subStyle}>Tabs closed before 1 minute won't be captured. You can change this in settings.</div>
+            </div>
           </div>
-
-          <div style={{ ...row, opacity: toastEnabled ? 1 : 0.4, pointerEvents: toastEnabled ? "auto" : "none" }}>
-            <div><div style={label}>Toast duration</div><div style={sub}>How long before it auto-dismisses</div></div>
-            <select value={toastDuration} onChange={e => setToastDuration(e.target.value)} style={dd}>
-              <option value="1">1 second</option>
-              <option value="2">2 seconds</option>
-              <option value="3">3 seconds</option>
-              <option value="5">5 seconds</option>
-              <option value="8">8 seconds</option>
-              <option value="10">10 seconds</option>
-            </select>
+          <div style={step}>
+            <div style={stepIcon}><span style={{ fontSize: "14px" }}>🚫</span></div>
+            <div>
+              <div style={labelStyle}>Exclude sensitive sites</div>
+              <div style={subStyle}>Add domains like bank.com or mail.google.com to your excluded list in settings — lastleaf will never capture those tabs.</div>
+            </div>
           </div>
-
-          <div style={row}>
-            <div><div style={label}>Minimum tab time</div><div style={sub}>Only capture tabs open longer than</div></div>
-            <select value={minTabTime} onChange={e => setMinTabTime(e.target.value)} style={dd}>
-              <option value="0">Off — capture everything</option>
-              <option value="30">30 seconds</option>
-              <option value="60">1 minute</option>
-              <option value="120">2 minutes</option>
-              <option value="300">5 minutes</option>
-              <option value="600">10 minutes</option>
-            </select>
-          </div>
-
-          <div style={rowLast}>
-            <div><div style={label}>Keep tabs for</div><div style={sub}>Older records are compressed to summaries</div></div>
-            <select value={retention} onChange={e => setRetention(e.target.value)} style={dd}>
-              <option value="30">30 days</option>
-              <option value="90">90 days</option>
-              <option value="180">180 days</option>
-              <option value="0">Forever</option>
-            </select>
+          <div style={stepLast}>
+            <div style={stepIcon}><span style={{ fontSize: "14px" }}>📥</span></div>
+            <div>
+              <div style={labelStyle}>Export your graveyard</div>
+              <div style={subStyle}>Download all your buried tabs as a CSV anytime from the dashboard header.</div>
+            </div>
           </div>
         </div>
 
-        <div style={{ textAlign: "center" }}>
-          <button onClick={handleStart} style={{ background: "#854F0B", color: "#FAC775", border: "none", borderRadius: "8px", padding: "13px 32px", fontSize: "14px", fontWeight: 500, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.2px" }}>
-            Start browsing — lastleaf is watching
+        {/* CTA */}
+        <div style={{ textAlign: "center", marginTop: "8px" }}>
+          <div style={{ fontSize: "14px", color: "#2C2C2A", fontWeight: 500, marginBottom: "8px" }}>You're all set. Start browsing normally.</div>
+          <div style={{ fontSize: "13px", color: "#888780", marginBottom: "24px", lineHeight: 1.6 }}>
+            lastleaf runs quietly in the background. Click the icon in your toolbar anytime to open your dashboard.
+          </div>
+          <button
+            onClick={openSettings}
+            style={{ background: "none", border: "0.5px solid #E8E5DE", borderRadius: "8px", padding: "10px 24px", fontSize: "13px", color: "#854F0B", cursor: "pointer", fontFamily: "inherit" }}
+          >
+            Go to Settings →
           </button>
-          <div style={{ fontSize: "12px", color: "#888780", marginTop: "10px" }}>Click the lastleaf icon in your toolbar to open the dashboard.</div>
         </div>
 
       </div>

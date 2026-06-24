@@ -4,10 +4,10 @@ import { getStorageStats } from "~lib/storage"
 const LeafLogo = () => (
   <svg width="22" height="22" viewBox="0 0 680 680">
     <g transform="translate(340,340) rotate(30)">
-      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#BA7517" opacity="0.22" />
-      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#854F0B" />
+      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#EF9F27" opacity="0.3" />
+      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#BA7517" />
       <path d="M6 -80 Q4 -50 2 -16" fill="none" stroke="#FAC775" strokeWidth="10" strokeLinecap="round" />
-      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#854F0B" strokeWidth="12" strokeLinecap="round" />
+      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#BA7517" strokeWidth="12" strokeLinecap="round" />
     </g>
   </svg>
 )
@@ -39,21 +39,7 @@ const IconChevron = () => (
   </svg>
 )
 
-const IconRefresh = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <polyline points="23 4 23 10 17 10"/>
-    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-  </svg>
-)
-
-function MenuItem({
-  icon, label, sub, onClick
-}: {
-  icon: React.ReactNode
-  label: string
-  sub?: string
-  onClick: () => void
-}) {
+function MenuItem({ icon, label, sub, onClick }: { icon: React.ReactNode; label: string; sub?: string; onClick: () => void }) {
   const [hovered, setHovered] = useState(false)
   return (
     <div
@@ -74,25 +60,10 @@ function MenuItem({
 
 export default function Popup() {
   const [stats, setStats] = useState({ tabCount: 0, estimatedMB: 0 })
-  const [showReloadBanner, setShowReloadBanner] = useState(false)
-  const [bannerDismissed, setBannerDismissed] = useState(false)
 
   useEffect(() => {
     getStorageStats().then(setStats)
-
-    // Check if this is first time popup opened — show reload banner
-    chrome.storage.local.get("lastleaf_reload_banner_dismissed", (result) => {
-      if (!result.lastleaf_reload_banner_dismissed) {
-        setShowReloadBanner(true)
-      }
-    })
   }, [])
-
-  function dismissBanner() {
-    setBannerDismissed(true)
-    setShowReloadBanner(false)
-    chrome.storage.local.set({ lastleaf_reload_banner_dismissed: true })
-  }
 
   function openDashboard() {
     chrome.tabs.create({ url: chrome.runtime.getURL("src/newtab/index.html") })
@@ -121,25 +92,6 @@ export default function Popup() {
         <span style={{ fontSize: "10px", color: "#EF9F27", letterSpacing: "0.3px" }}>Remember what you closed.</span>
       </div>
 
-      {/* Reload banner — shown once until dismissed */}
-      {showReloadBanner && !bannerDismissed && (
-        <div style={{ background: "#FFF3CD", borderBottom: "0.5px solid #EFD4A0", padding: "8px 12px", display: "flex", alignItems: "flex-start", gap: "8px" }}>
-          <div style={{ color: "#854F0B", flexShrink: 0, marginTop: "1px" }}><IconRefresh /></div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: "11px", fontWeight: 500, color: "#412402", marginBottom: "2px" }}>Reload existing tabs</div>
-            <div style={{ fontSize: "11px", color: "#854F0B", lineHeight: 1.5 }}>
-              Tabs already open won't show toasts until reloaded. New tabs work automatically.
-            </div>
-          </div>
-          <button
-            onClick={dismissBanner}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "#BA7517", fontSize: "14px", padding: "0", flexShrink: 0, lineHeight: 1 }}
-          >
-            ×
-          </button>
-        </div>
-      )}
-
       {/* Stats */}
       <div style={{ background: "#FAEEDA", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-around", borderBottom: "0.5px solid #EFD4A0" }}>
         <div style={{ textAlign: "center" }}>
@@ -157,7 +109,7 @@ export default function Popup() {
       <div style={{ paddingTop: "4px", paddingBottom: "4px" }}>
         <MenuItem icon={<IconDashboard />} label="Dashboard" sub="View your tab graveyard" onClick={openDashboard} />
         <div style={{ height: "0.5px", background: "#F1EFE8", margin: "0 16px" }} />
-        <MenuItem icon={<IconSettings />} label="Settings" sub="Toast, capture & data options" onClick={openSettings} />
+        <MenuItem icon={<IconSettings />} label="Settings" sub="Capture, data & preferences" onClick={openSettings} />
         <div style={{ height: "0.5px", background: "#F1EFE8", margin: "0 16px" }} />
         <MenuItem icon={<IconMail />} label="Send feedback" sub="hello@sylvoralabs.com" onClick={openFeedback} />
       </div>
