@@ -83,4 +83,4 @@ vercel-api/
 
 ---
 
-Made by Sylvora Labs · hello@sylvoralabs.com
+Made by Sylvora Labs · sylvoralabs@gmail.com.com

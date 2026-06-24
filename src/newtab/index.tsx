@@ -72,7 +72,7 @@ export default function NewTab() {
             <span style={{ fontWeight: 500, color: "var(--ll-text-primary, #2C2C2A)" }}>{formatTime(totalTime)}</span> total
           </span>
           <a
-            href={chrome.runtime.getURL("tabs/options.html")}
+            href={chrome.runtime.getURL("src/options/index.html")}
             style={{ color: "var(--ll-text-tertiary, #888780)", display: "flex", alignItems: "center" }}
             title="Settings"
           >
@@ -139,7 +139,7 @@ export default function NewTab() {
           © {new Date().getFullYear()} Sylvora Labs
         </span>
         <a
-          href="mailto:hello@sylvoralabs.com"
+          href="mailto:sylvoralabs@gmail.com.com"
           style={{ fontSize: "11px", color: "var(--ll-text-tertiary, #888780)", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
