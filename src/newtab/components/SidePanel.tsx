@@ -13,32 +13,30 @@ export function SidePanel({ cluster, onClose, onAction, scrollToTags }: Props) {
 
   return (
     <div style={{
-      width: visible ? "238px" : "0px",
+      width: visible ? "240px" : "0px",
       flexShrink: 0,
       overflow: "hidden",
-      borderLeft: visible ? "0.5px solid var(--ll-border, rgba(136,135,128,0.2))" : "none",
-      background: "var(--ll-card-bg, #ffffff)",
+      borderLeft: visible ? "0.5px solid #E8E5DE" : "none",
+      background: "#FDFAF6",
       transition: "width 0.18s ease",
       display: "flex",
       flexDirection: "column"
     }}>
       {cluster && (
-        <div style={{ minWidth: "238px", padding: "14px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "0" }}>
+        <div style={{ minWidth: "240px", padding: "14px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
 
+          {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: cluster.color.dot }} />
-              <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--ll-text-primary, #2C2C2A)" }}>
+              <span style={{ fontSize: "13px", fontWeight: 500, color: "#2C2C2A" }}>
                 {cluster.label}
               </span>
             </div>
             <button
               onClick={onClose}
               aria-label="Close panel"
-              style={{
-                background: "none", border: "none", cursor: "pointer", padding: "2px",
-                color: "var(--ll-text-tertiary, #888780)", display: "flex", alignItems: "center"
-              }}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", color: "#B4B2A9", display: "flex", alignItems: "center" }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -46,7 +44,8 @@ export function SidePanel({ cluster, onClose, onAction, scrollToTags }: Props) {
             </button>
           </div>
 
-          <div style={{ fontSize: "11px", color: "var(--ll-text-tertiary, #888780)", marginBottom: "16px" }}>
+          {/* Meta */}
+          <div style={{ fontSize: "11px", color: "#888780", marginBottom: "16px" }}>
             {cluster.tabs.length} tabs · {
               (() => {
                 const ms = cluster.totalTime
@@ -57,8 +56,9 @@ export function SidePanel({ cluster, onClose, onAction, scrollToTags }: Props) {
             } browsing
           </div>
 
+          {/* Topics */}
           <div id="panel-tags-section">
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "var(--ll-text-tertiary, #888780)", letterSpacing: "0.5px", marginBottom: "7px" }}>
+            <div style={{ fontSize: "10px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.5px", marginBottom: "7px" }}>
               TOPICS
             </div>
             <div style={{ marginBottom: "18px", lineHeight: "2.2" }}>
@@ -75,8 +75,9 @@ export function SidePanel({ cluster, onClose, onAction, scrollToTags }: Props) {
             </div>
           </div>
 
+          {/* Tabs */}
           <div id="panel-tabs-section">
-            <div style={{ fontSize: "10px", fontWeight: 500, color: "var(--ll-text-tertiary, #888780)", letterSpacing: "0.5px", marginBottom: "8px" }}>
+            <div style={{ fontSize: "10px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.5px", marginBottom: "8px" }}>
               TABS
             </div>
             <div>
