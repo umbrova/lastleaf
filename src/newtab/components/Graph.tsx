@@ -50,47 +50,64 @@ export function Graph({ clusters, selectedId, onSelect }: Props) {
     const canvas = canvasRef.current
     if (!canvas || !size.w || !size.h) return
     const dpr = window.devicePixelRatio || 1
-    canvas.width = size.w * dpr
-    canvas.height = size.h * dpr
-    canvas.style.width = size.w + "px"
-    canvas.style.height = size.h + "px"
+
+    // Canvas covers the full zoomed area
+    const scaledW = size.w * zoom
+    const scaledH = size.h * zoom
+    canvas.width = scaledW * dpr
+    canvas.height = scaledH * dpr
+    canvas.style.width = scaledW + "px"
+    canvas.style.height = scaledH + "px"
+
     const ctx = canvas.getContext("2d")!
     ctx.scale(dpr, dpr)
 
     EDGES.forEach(([a, b]) => {
       const ca = clusters[a], cb = clusters[b]
       if (!ca || !cb) return
+
       const posA = POSITIONS[a] ?? POSITIONS[0]
       const posB = POSITIONS[b] ?? POSITIONS[1]
-      const ax = posA.x * size.w + CARD_W / 2
-      const ay = posA.y * size.h + CARD_H / 2
-      const bx = posB.x * size.w + CARD_W / 2
-      const by = posB.y * size.h + CARD_H / 2
+
+      // Scale card positions by zoom — canvas is already zoom-sized
+      const ax = (posA.x * size.w + CARD_W / 2) * zoom
+      const ay = (posA.y * size.h + CARD_H / 2) * zoom
+      const bx = (posB.x * size.w + CARD_W / 2) * zoom
+      const by = (posB.y * size.h + CARD_H / 2) * zoom
+
       const isHighlighted = selectedId !== null && (ca.id === selectedId || cb.id === selectedId)
 
       ctx.beginPath()
       ctx.moveTo(ax, ay)
-      ctx.quadraticCurveTo((ax + bx) / 2, (ay + by) / 2 - 28, bx, by)
+      ctx.quadraticCurveTo(
+        (ax + bx) / 2,
+        (ay + by) / 2 - 28 * zoom,
+        bx, by
+      )
       ctx.strokeStyle = isHighlighted
-        ? "rgba(186,117,23,0.45)"
-        : "rgba(186,117,23,0.15)"
+        ? "rgba(186,117,23,0.5)"
+        : "rgba(186,117,23,0.18)"
       ctx.lineWidth = isHighlighted ? 1.5 : 0.75
       ctx.setLineDash(isHighlighted ? [] : [4, 5])
       ctx.stroke()
       ctx.setLineDash([])
     })
-  }, [clusters, selectedId, size])
+  }, [clusters, selectedId, size, zoom])
 
   return (
-    <div ref={containerRef} style={{ flex: 1, position: "relative", overflow: "hidden", background: "#FDFCFB" }}>
-      <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }} />
+    // Outer container — clips and allows scrolling when zoomed
+    <div ref={containerRef} style={{ flex: 1, position: "relative", overflow: "auto", background: "#FDFCFB",
+      backgroundImage: "linear-gradient(rgba(186,117,23,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(186,117,23,0.07) 1px, transparent 1px)",
+      backgroundSize: "32px 32px"
+    }}>
 
-      <div style={{
-        position: "absolute", inset: 0,
-        transform: `scale(${zoom})`,
-        transformOrigin: "center center",
-        transition: "transform 0.2s"
-      }}>
+      {/* Inner wrapper — expands to zoomed size so scrollbars appear */}
+      <div style={{ position: "relative", width: size.w * zoom, height: size.h * zoom, minWidth: "100%", minHeight: "100%" }}>
+
+        {/* Canvas for edges — fills zoomed area */}
+        <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }} />
+
+        {/* Cards — positioned at scaled coordinates */}
         {clusters.map((cluster, i) => {
           const pos = POSITIONS[i] ?? { x: 0.1 + (i * 0.15) % 0.8, y: 0.1 + (i * 0.2) % 0.7 }
           return (
@@ -98,7 +115,12 @@ export function Graph({ clusters, selectedId, onSelect }: Props) {
               key={cluster.id}
               cluster={cluster}
               selected={cluster.id === selectedId}
-              style={{ left: pos.x * size.w, top: pos.y * size.h }}
+              style={{
+                left: pos.x * size.w * zoom,
+                top: pos.y * size.h * zoom,
+                transform: `scale(${zoom})`,
+                transformOrigin: "top left"
+              }}
               onClick={(e) => {
                 const target = e.target as HTMLElement
                 const isMore = target.dataset.more === "true"
@@ -107,17 +129,18 @@ export function Graph({ clusters, selectedId, onSelect }: Props) {
             />
           )
         })}
+
       </div>
 
-      {/* Zoom controls */}
-      <div style={{ position: "absolute", bottom: "16px", right: "16px", display: "flex", flexDirection: "column", gap: "4px", zIndex: 10 }}>
+      {/* Zoom controls — fixed to bottom right of viewport */}
+      <div style={{ position: "sticky", bottom: "16px", float: "right", marginRight: "16px", display: "flex", flexDirection: "column", gap: "4px", zIndex: 10 }}>
         <button
-          onClick={() => setZoom(z => Math.min(z + 0.15, 2))}
-          style={{ width: "28px", height: "28px", borderRadius: "7px", border: "0.5px solid #E8E5DE", background: "#ffffff", color: "#854F0B", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", fontWeight: 400 }}
+          onClick={() => setZoom(z => Math.min(+(z + 0.15).toFixed(2), 2))}
+          style={{ width: "28px", height: "28px", borderRadius: "7px", border: "0.5px solid #E8E5DE", background: "#ffffff", color: "#854F0B", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
         >+</button>
         <button
-          onClick={() => setZoom(z => Math.max(z - 0.15, 0.4))}
-          style={{ width: "28px", height: "28px", borderRadius: "7px", border: "0.5px solid #E8E5DE", background: "#ffffff", color: "#854F0B", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", fontWeight: 400 }}
+          onClick={() => setZoom(z => Math.max(+(z - 0.15).toFixed(2), 0.4))}
+          style={{ width: "28px", height: "28px", borderRadius: "7px", border: "0.5px solid #E8E5DE", background: "#ffffff", color: "#854F0B", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
         >−</button>
         {zoom !== 1 && (
           <button
@@ -126,6 +149,7 @@ export function Graph({ clusters, selectedId, onSelect }: Props) {
           >1:1</button>
         )}
       </div>
+
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import type { Cluster } from "~lib/clustering"
 
-const VISIBLE_TAGS = 3
+const VISIBLE_TAGS = 2
 
 interface Props {
   cluster: Cluster
