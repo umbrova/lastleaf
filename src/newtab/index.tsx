@@ -160,11 +160,32 @@ export default function NewTab() {
             Loading your graveyard...
           </div>
         ) : clusters.length === 0 ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <LeafLogo />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <svg width="260" height="200" viewBox="0 0 680 360" style={{ opacity: 0.9 }}>
+              <g transform="translate(340,155) rotate(30)">
+                <path d="M40 -120 Q130 -70 100 20 Q40 55 -20 20 Q-70 -50 40 -120 Z" fill="#EF9F27" opacity="0.08"/>
+                <path d="M28 -110 Q115 -60 88 18 Q28 52 -32 18 Q-80 -44 28 -110 Z" fill="#BA7517" opacity="0.14"/>
+                <path d="M28 -100 Q25 -40 22 22" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round" opacity="0.2"/>
+                <path d="M27 -70 Q8 -52 -2 -36" fill="none" stroke="#BA7517" strokeWidth="1" strokeLinecap="round" opacity="0.15"/>
+                <path d="M27 -44 Q46 -32 52 -18" fill="none" stroke="#BA7517" strokeWidth="1" strokeLinecap="round" opacity="0.15"/>
+                <path d="M22 24 Q16 44 10 58" fill="none" stroke="#BA7517" strokeWidth="2" strokeLinecap="round" opacity="0.15"/>
+              </g>
+              <g transform="translate(210,100) rotate(20)" opacity="0.18">
+                <path d="M8 -28 Q26 -16 20 4 Q8 12 -4 4 Q-14 -10 8 -28 Z" fill="#BA7517"/>
+              </g>
+              <g transform="translate(470,120) rotate(-15)" opacity="0.14">
+                <path d="M6 -22 Q20 -12 15 4 Q6 10 -3 4 Q-10 -8 6 -22 Z" fill="#BA7517"/>
+              </g>
+              <g transform="translate(260,240) rotate(35)" opacity="0.1">
+                <path d="M5 -18 Q16 -10 12 3 Q5 8 -2 3 Q-8 -6 5 -18 Z" fill="#BA7517"/>
+              </g>
+              <g transform="translate(430,220) rotate(-25)" opacity="0.12">
+                <path d="M7 -24 Q22 -14 17 5 Q7 11 -3 5 Q-12 -9 7 -24 Z" fill="#BA7517"/>
+              </g>
+            </svg>
             <div style={{ fontSize: "14px", fontWeight: 500, color: "#2C2C2A", marginTop: "4px" }}>No tabs buried yet</div>
-            <div style={{ fontSize: "12px", color: "#888780", lineHeight: 1.6, textAlign: "center", maxWidth: "260px" }}>
-              Browse normally — lastleaf will capture tabs you close after 1 minute.
+            <div style={{ fontSize: "12px", color: "#888780", lineHeight: 1.7, textAlign: "center", maxWidth: "280px", marginTop: "4px" }}>
+              Browse normally — lastleaf captures tabs you close after your minimum time threshold.
             </div>
           </div>
         ) : (
