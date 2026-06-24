@@ -42,7 +42,7 @@ export function OnboardingHint() {
           boxShadow: "0 4px 24px rgba(0,0,0,0.08)"
         }}
       >
-        <svg width="32" height="32" viewBox="0 0 680 680" style={{ margin: "0 auto 12px", display: "block" }}>
+        <svg width="44" height="44" viewBox="0 0 680 680" style={{ margin: "0 auto 12px", display: "block" }}>
           <g transform="translate(340,340) rotate(30)">
             <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#EF9F27" opacity="0.3"/>
             <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#BA7517"/>

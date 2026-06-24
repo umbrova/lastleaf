@@ -10,6 +10,13 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { width: 240px; overflow: hidden; }
     </style>
+    <script>
+      const link = document.createElement('link')
+      link.rel = 'icon'
+      link.type = 'image/png'
+      link.href = chrome.runtime.getURL('assets/icon48.png')
+      document.head.appendChild(link)
+    </script>
   </head>
   <body>
     <div id="root"></div>

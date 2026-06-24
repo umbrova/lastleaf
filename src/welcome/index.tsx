@@ -1,10 +1,14 @@
-const LeafLogo = () => (
-  <svg width="44" height="44" viewBox="0 0 680 680">
-    <g transform="translate(340,340) rotate(30)">
-      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#EF9F27" opacity="0.3" />
-      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#BA7517" />
-      <path d="M6 -80 Q4 -50 2 -16" fill="none" stroke="#FAC775" strokeWidth="10" strokeLinecap="round" />
-      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#BA7517" strokeWidth="12" strokeLinecap="round" />
+const LeafLogo = ({ size = 28 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100">
+    <g transform="translate(50,52) rotate(25)">
+      <path d="M0 -44 Q38 -28 28 8 Q0 24 -28 8 Q-38 -18 0 -44 Z" fill="#BA7517"/>
+      <path d="M0 -38 Q-1 -14 -2 10" fill="none" stroke="#FAC775" strokeWidth="4" strokeLinecap="round"/>
+      <path d="M-1 -22 Q-14 -12 -20 -2" fill="none" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M-1 -8 Q12 -2 16 6" fill="none" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M-2 12 Q-4 22 -6 30" fill="none" stroke="#BA7517" strokeWidth="3.5" strokeLinecap="round"/>
+    </g>
+    <g transform="translate(50,52) rotate(25)" opacity="0.22">
+      <path d="M12 -48 Q50 -32 40 4 Q12 20 -16 4 Q-26 -22 12 -48 Z" fill="#EF9F27"/>
     </g>
   </svg>
 )
@@ -45,7 +49,7 @@ export default function Welcome() {
 
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "40px" }}>
-          <LeafLogo />
+          <LeafLogo size={52} />
           <div>
             <div style={{ fontSize: "26px", fontWeight: 400, color: "#2C2C2A", fontFamily: "Georgia, serif", fontStyle: "italic", lineHeight: 1 }}>lastleaf</div>
             <div style={{ fontSize: "12px", color: "#BA7517", marginTop: "3px", letterSpacing: "0.5px" }}>Remember what you closed.</div>
@@ -61,21 +65,21 @@ export default function Welcome() {
         <div style={card}>
           <div style={sectionLabel}>HOW IT WORKS</div>
           <div style={step}>
-            <div style={stepIcon}><span style={{ fontSize: "15px" }}>👁</span></div>
+            <div style={stepIcon}><i class="ti ti-eye" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>lastleaf watches your tabs silently</div>
               <div style={subStyle}>Any tab open longer than your minimum time threshold gets captured. Everything stays on your device — nothing is sent to any server.</div>
             </div>
           </div>
           <div style={step}>
-            <div style={stepIcon}><span style={{ fontSize: "15px" }}>🍂</span></div>
+            <div style={stepIcon}><i class="ti ti-leaf" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Closed tabs go to the graveyard</div>
               <div style={subStyle}>Tabs are automatically grouped by topic and session. Your browsing history becomes a personal knowledge map.</div>
             </div>
           </div>
           <div style={stepLast}>
-            <div style={stepIcon}><span style={{ fontSize: "15px" }}>🗺</span></div>
+            <div style={stepIcon}><i class="ti ti-layout-grid" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Click the lastleaf icon to explore</div>
               <div style={subStyle}>Open the dashboard anytime from the toolbar. Click any cluster card to see the tabs inside — reopen or bury them.</div>
@@ -87,21 +91,21 @@ export default function Welcome() {
         <div style={card}>
           <div style={sectionLabel}>PERMISSIONS — WHY WE NEED THEM</div>
           <div style={step}>
-            <div style={stepIcon}><span style={{ fontSize: "14px" }}>🗂</span></div>
+            <div style={stepIcon}><i class="ti ti-folder" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Tabs</div>
               <div style={subStyle}>To know when tabs open and close, and how long they were open.</div>
             </div>
           </div>
           <div style={step}>
-            <div style={stepIcon}><span style={{ fontSize: "14px" }}>💾</span></div>
+            <div style={stepIcon}><i class="ti ti-device-floppy" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Storage</div>
               <div style={subStyle}>To save your tab history locally on your device. Nothing goes to any server.</div>
             </div>
           </div>
           <div style={stepLast}>
-            <div style={stepIcon}><span style={{ fontSize: "14px" }}>🔒</span></div>
+            <div style={stepIcon}><i class="ti ti-lock" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Privacy first</div>
               <div style={subStyle}>All data stays on your machine. lastleaf never reads page content — only tab titles and URLs.</div>
@@ -113,21 +117,21 @@ export default function Welcome() {
         <div style={card}>
           <div style={sectionLabel}>TIPS</div>
           <div style={step}>
-            <div style={stepIcon}><span style={{ fontSize: "14px" }}>⏱</span></div>
+            <div style={stepIcon}><i class="ti ti-clock" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Default capture threshold is 1 minute</div>
               <div style={subStyle}>Tabs closed before 1 minute won't be captured. You can change this in settings.</div>
             </div>
           </div>
           <div style={step}>
-            <div style={stepIcon}><span style={{ fontSize: "14px" }}>🚫</span></div>
+            <div style={stepIcon}><i class="ti ti-ban" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Exclude sensitive sites</div>
               <div style={subStyle}>Add domains like bank.com or mail.google.com to your excluded list in settings — lastleaf will never capture those tabs.</div>
             </div>
           </div>
           <div style={stepLast}>
-            <div style={stepIcon}><span style={{ fontSize: "14px" }}>📥</span></div>
+            <div style={stepIcon}><i class="ti ti-download" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Export your graveyard</div>
               <div style={subStyle}>Download all your buried tabs as a CSV anytime from the dashboard header.</div>

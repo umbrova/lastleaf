@@ -6,13 +6,17 @@ import { OnboardingHint } from "./components/OnboardingHint"
 import type { Cluster } from "~lib/clustering"
 import { formatTime } from "~lib/clustering"
 
-const LeafLogo = () => (
-  <svg width="20" height="20" viewBox="0 0 680 680">
-    <g transform="translate(340,340) rotate(30)">
-      <path d="M18 -78 Q58 -52 42 -4 Q18 12 -6 -4 Q-26 -36 18 -78 Z" fill="#EF9F27" opacity="0.3"/>
-      <path d="M6 -88 Q48 -62 32 -12 Q6 4 -20 -12 Q-40 -44 6 -88 Z" fill="#BA7517"/>
-      <path d="M6 -80 Q4 -50 2 -16" fill="none" stroke="#FAC775" strokeWidth="10" strokeLinecap="round"/>
-      <path d="M2 -14 Q0 2 -2 14" fill="none" stroke="#BA7517" strokeWidth="12" strokeLinecap="round"/>
+const LeafLogo = ({ size = 28 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100">
+    <g transform="translate(50,52) rotate(25)">
+      <path d="M0 -44 Q38 -28 28 8 Q0 24 -28 8 Q-38 -18 0 -44 Z" fill="#BA7517"/>
+      <path d="M0 -38 Q-1 -14 -2 10" fill="none" stroke="#FAC775" strokeWidth="4" strokeLinecap="round"/>
+      <path d="M-1 -22 Q-14 -12 -20 -2" fill="none" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M-1 -8 Q12 -2 16 6" fill="none" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M-2 12 Q-4 22 -6 30" fill="none" stroke="#BA7517" strokeWidth="3.5" strokeLinecap="round"/>
+    </g>
+    <g transform="translate(50,52) rotate(25)" opacity="0.22">
+      <path d="M12 -48 Q50 -32 40 4 Q12 20 -16 4 Q-26 -22 12 -48 Z" fill="#EF9F27"/>
     </g>
   </svg>
 )
@@ -107,9 +111,9 @@ export default function NewTab() {
         flexShrink: 0
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <LeafLogo />
+          <LeafLogo size={32} />
           <span style={{
-            fontSize: "15px", fontWeight: 400,
+            fontSize: "18px", fontWeight: 400,
             fontFamily: "Georgia, serif", fontStyle: "italic",
             color: "#854F0B"
           }}>

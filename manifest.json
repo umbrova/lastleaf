@@ -24,7 +24,11 @@
     {
       "resources": [
         "src/welcome/index.html",
-        "src/newtab/index.html"
+        "src/newtab/index.html",
+        "assets/icon16.png",
+        "assets/icon32.png",
+        "assets/icon48.png",
+        "assets/icon128.png"
       ],
       "matches": [
         "<all_urls>"
