@@ -50,8 +50,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (!tab.url) return
   if (tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://") || tab.url === "about:blank" || tab.url === "about:newtab") return
 
-  console.log("[lastleaf] tab updated/complete:", tabId, tab.url)
-
   const domain = extractDomain(tab.url)
   const settings = await getSettings()
 
@@ -68,8 +66,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     lastActiveAt: existing?.lastActiveAt ?? Date.now(),
     activeTime: existing?.activeTime ?? 0
   })
-
-  console.log("[lastleaf] tab tracked:", tabId, domain)
 })
 
 // ── Tab activated ─────────────────────────────────────────────────
@@ -77,7 +73,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   await stopTracking()
   startTracking(tabId)
-  console.log("[lastleaf] tab activated:", tabId)
 })
 
 // ── Window focus ──────────────────────────────────────────────────
@@ -94,13 +89,11 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 // ── Tab closed ────────────────────────────────────────────────────
 
 chrome.tabs.onRemoved.addListener(async (tabId) => {
-  console.log("[lastleaf] tab removed:", tabId)
 
   if (activeTabId === tabId) await stopTracking()
 
   const meta = await getOpenTab(tabId)
   if (!meta) {
-    console.log("[lastleaf] no meta found for tab:", tabId)
     return
   }
 
@@ -110,10 +103,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   const totalActiveMs = meta.activeTime
   const minMs = settings.minTabTime * 1000
 
-  console.log("[lastleaf] tab time:", totalActiveMs, "min required:", minMs)
-
   if (totalActiveMs < minMs) {
-    console.log("[lastleaf] tab below threshold, skipping")
     return
   }
 
@@ -135,8 +125,6 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
     buried: false,
     protected: false
   }
-
-  console.log("[lastleaf] saving record:", record.title, record.timeSpent)
   await saveTabRecord(record)
   await trackEvent("tab_buried")
   await updateBadgeCount()
@@ -158,7 +146,6 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
       if (!t.url || t.url.startsWith("chrome://") || t.url.startsWith("chrome-extension://")) continue
       try {
         await chrome.tabs.sendMessage(t.id, toastPayload)
-        console.log("[lastleaf] toast sent to:", t.id, t.url)
         sent = true
         break // send to first available tab that responds
       } catch {
@@ -168,7 +155,6 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
     }
 
     if (!sent) {
-      console.log("[lastleaf] no tab available for toast")
     }
   }
 })
