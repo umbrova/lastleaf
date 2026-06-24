@@ -17,6 +17,48 @@ const LeafLogo = () => (
   </svg>
 )
 
+function exportCSV(clusters: any[]) {
+  const rows = [["Title", "URL", "Domain", "Cluster", "Time Spent (mins)", "Date Closed"]]
+  clusters.forEach(cluster => {
+    cluster.tabs.forEach((tab: any) => {
+      const mins = Math.round(tab.timeSpent / 60000)
+      const date = new Date(tab.closedAt).toLocaleString()
+      rows.push([
+        `"${(tab.title || tab.url).replace(/"/g, '""')}"`,
+        `"${tab.url.replace(/"/g, '""')}"`,
+        tab.domain,
+        `"${cluster.label.replace(/"/g, '""')}"`,
+        String(mins),
+        `"${date}"`
+      ])
+    })
+  })
+  const csv = rows.map(r => r.join(",")).join("\n")
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `lastleaf-export-${new Date().toISOString().slice(0,10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+const RefreshIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
+    <polyline points="23 4 23 10 17 10"/>
+    <polyline points="1 20 1 14 7 14"/>
+    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+  </svg>
+)
+
+const DownloadIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+)
+
 const GearIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
     <circle cx="12" cy="12" r="3"/>
@@ -85,6 +127,22 @@ export default function NewTab() {
           <span style={{ fontSize: "12px", color: "#888780" }}>
             <span style={{ fontWeight: 500, color: "#2C2C2A" }}>{formatTime(totalTime)}</span> total
           </span>
+          <button
+            onClick={reload}
+            title="Refresh dashboard"
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#BA7517", display: "flex", alignItems: "center", padding: 0 }}
+          >
+            <RefreshIcon />
+          </button>
+          {clusters.length > 0 && (
+            <button
+              onClick={() => exportCSV(clusters)}
+              title="Export to CSV"
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#BA7517", display: "flex", alignItems: "center", padding: 0 }}
+            >
+              <DownloadIcon />
+            </button>
+          )}
           <a
             href={chrome.runtime.getURL("src/options/index.html")}
             style={{ color: "#BA7517", display: "flex", alignItems: "center" }}
