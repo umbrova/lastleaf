@@ -36,10 +36,20 @@ function MenuItem({ icon, label, sub, onClick }: { icon: string; label: string; 
 }
 
 export default function Popup() {
-  const [stats, setStats] = useState({ tabCount: 0, estimatedMB: 0 })
+  const [stats, setStats] = useState<{ tabCount: number; estimatedMB: number } | null>(null)
 
   useEffect(() => {
-    getStorageStats().then(setStats)
+    // Read cached stats instantly from chrome.storage.local (no IndexedDB cold start)
+    chrome.storage.local.get("lastleaf_stats_cache", (result) => {
+      if (result.lastleaf_stats_cache) {
+        setStats(result.lastleaf_stats_cache)
+      }
+    })
+    // Then update with fresh count in background
+    getStorageStats().then(fresh => {
+      setStats(fresh)
+      chrome.storage.local.set({ lastleaf_stats_cache: fresh })
+    })
   }, [])
 
   function openDashboard() {
@@ -53,7 +63,7 @@ export default function Popup() {
   }
 
   function openFeedback() {
-    chrome.tabs.create({ url: "mailto:sylvoralabs@gmail.com" })
+    chrome.tabs.create({ url: "mailto:hello@sylvoralabs.com" })
     window.close()
   }
 
@@ -69,12 +79,12 @@ export default function Popup() {
       {/* Stats — subtle amber tint */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-around", padding: "12px 16px", borderBottom: "0.5px solid #F0EDE6", background: "#FDFCFB" }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "18px", fontWeight: 500, color: "#2C2C2A" }}>{stats.tabCount}</div>
+          <div style={{ fontSize: "15px", fontWeight: 600, color: "#2C2C2A" }}>{stats?.tabCount ?? "—"}</div>
           <div style={{ fontSize: "10px", color: "#BA7517", letterSpacing: "0.3px", marginTop: "1px" }}>TABS BURIED</div>
         </div>
         <div style={{ width: "0.5px", height: "28px", background: "#E8E5DE" }} />
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "18px", fontWeight: 500, color: "#2C2C2A" }}>{stats.estimatedMB} MB</div>
+          <div style={{ fontSize: "15px", fontWeight: 600, color: "#2C2C2A" }}>{stats ? `${stats.estimatedMB} MB` : "—"}</div>
           <div style={{ fontSize: "10px", color: "#BA7517", letterSpacing: "0.3px", marginTop: "1px" }}>STORAGE</div>
         </div>
       </div>
@@ -85,7 +95,7 @@ export default function Popup() {
         <div style={{ height: "0.5px", background: "#F0EDE6", margin: "0 16px" }} />
         <MenuItem icon="ti-settings" label="Settings" sub="Capture, data & preferences" onClick={openSettings} />
         <div style={{ height: "0.5px", background: "#F0EDE6", margin: "0 16px" }} />
-        <MenuItem icon="ti-mail" label="Send feedback" sub="sylvoralabs@gmail.com" onClick={openFeedback} />
+        <MenuItem icon="ti-mail" label="Send feedback" sub="hello@sylvoralabs.com" onClick={openFeedback} />
       </div>
 
       {/* Footer */}
