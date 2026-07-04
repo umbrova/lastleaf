@@ -170,4 +170,4 @@ Anonymous usage counters via Upstash Redis, proxied through a Vercel edge functi
 
 ---
 
-Made by **Sylvora Labs** · sylvoralabs@gmail.com
+Made by **Umbrova** · hello@umbrova.com

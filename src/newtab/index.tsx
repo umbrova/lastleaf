@@ -218,8 +218,8 @@ export default function NewTab() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         flexShrink: 0
       }}>
-        <span style={{ fontSize: "11px", color: "#B4B2A9" }}>© {new Date().getFullYear()} Sylvora Labs</span>
-        <a href="mailto:sylvoralabs@gmail.com"
+        <span style={{ fontSize: "11px", color: "#B4B2A9" }}>© {new Date().getFullYear()} Umbrova</span>
+        <a href="mailto:hello@umbrova.com"
           style={{ fontSize: "11px", color: "#BA7517", display: "flex", alignItems: "center", gap: "4px", textDecoration: "none" }}>
           <MailIcon /> Feedback
         </a>
