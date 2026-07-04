@@ -58,7 +58,7 @@ export default function Welcome() {
 
         <h1 style={{ fontSize: "21px", fontWeight: 600, color: "#2C2C2A", margin: "0 0 8px" }}>Your tabs now have a second life.</h1>
         <p style={{ fontSize: "14px", color: "#5F5E5A", margin: "0 0 32px", lineHeight: 1.7 }}>
-          Every tab you close gets quietly captured. Come back to it anytime — grouped by topic, connected by session.
+          Every tab you close gets quietly captured. Come back to it anytime — grouped by topic.
         </p>
 
         {/* How it works */}
@@ -75,7 +75,7 @@ export default function Welcome() {
             <div style={stepIcon}><i class="ti ti-leaf" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
             <div>
               <div style={labelStyle}>Closed tabs go to the graveyard</div>
-              <div style={subStyle}>Tabs are automatically grouped by topic and session. Your browsing history becomes a personal knowledge map.</div>
+              <div style={subStyle}>Tabs are automatically grouped by topic. Your browsing history becomes a personal knowledge map.</div>
             </div>
           </div>
           <div style={stepLast}>
@@ -102,6 +102,13 @@ export default function Welcome() {
             <div>
               <div style={labelStyle}>Storage</div>
               <div style={subStyle}>To save your tab history locally on your device. Nothing goes to any server.</div>
+            </div>
+          </div>
+          <div style={step}>
+            <div style={stepIcon}><i class="ti ti-clock" style={{fontSize:"16px",color:"#BA7517"}} aria-hidden="true"/></div>
+            <div>
+              <div style={labelStyle}>Alarms</div>
+              <div style={subStyle}>To periodically compress old records after 90 days and send a daily active-use signal.</div>
             </div>
           </div>
           <div style={stepLast}>
