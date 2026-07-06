@@ -78,7 +78,8 @@ function scoreTabForCluster(
 export function buildClusters(tabs: TabRecord[]): Cluster[] {
   if (!tabs.length) return []
 
-  // group by domain category first
+  // group by domain category first — everything not in the built-in
+  // domain map lands in one shared "uncategorised" bucket
   const categoryGroups = new Map<string, TabRecord[]>()
 
   for (const tab of tabs) {
@@ -107,11 +108,15 @@ export function buildClusters(tabs: TabRecord[]): Cluster[] {
       .slice(0, 8)
       .map(([kw]) => kw)
 
-    // build cluster label from top 2 keywords + category
+    // build cluster label from top 2 keywords + category —
+    // except uncategorised, which always gets a plain generic label since
+    // its tabs can be totally unrelated sites with no shared topic
     const labelParts = topKeywords.slice(0, 2)
-    const label = labelParts.length > 0
-      ? labelParts.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" / ")
-      : category.charAt(0).toUpperCase() + category.slice(1)
+    const label = category === "uncategorised"
+      ? "Miscellaneous"
+      : labelParts.length > 0
+        ? labelParts.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" / ")
+        : category.charAt(0).toUpperCase() + category.slice(1)
 
     const totalTime = groupTabs.reduce((sum, t) => sum + t.timeSpent, 0)
     const color = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.uncategorised
@@ -127,10 +132,10 @@ export function buildClusters(tabs: TabRecord[]): Cluster[] {
     })
   }
 
-  // Merge clusters with same label (can happen when category + keyword overlap)
+  // Merge clusters with same id (can happen when category + keyword overlap)
   const merged = new Map<string, Cluster>()
   for (const cluster of clusters) {
-    const key = cluster.category
+    const key = cluster.id
     if (merged.has(key)) {
       const existing = merged.get(key)!
       existing.tabs = [...existing.tabs, ...cluster.tabs]

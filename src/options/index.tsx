@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { getSettings, setSetting, clearAllData, getStorageStats, type Settings } from "~lib/storage"
+import { getSettings, setSetting, clearAllData, getStorageStats, formatStorageSize, type Settings } from "~lib/storage"
 
 const LeafLogo = ({ size = 28 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 100 100">
@@ -206,7 +206,8 @@ export default function Options() {
           <div style={row}>
             <div>
               <div style={labelStyle}>Keep full records for</div>
-              <div style={subStyle}>Older tabs are compressed to summaries</div>
+              <div style={subStyle}>Older tabs are permanently deleted after this period</div>
+              <div style={{ ...subStyle, marginTop: "2px" }}>You can export everything to CSV from the dashboard header before it expires</div>
             </div>
             <select
               value={settings.retentionDays === 0 ? "0" : String(settings.retentionDays)}
@@ -223,13 +224,13 @@ export default function Options() {
           <div style={row}>
             <div>
               <div style={labelStyle}>Storage used</div>
-              <div style={subStyle}>{stats.tabCount} tabs · ~{stats.estimatedMB} MB</div>
+              <div style={subStyle}>{stats.tabCount} tabs · ~{formatStorageSize(stats.estimatedMB)}</div>
             </div>
             <div style={{ width: "120px" }}>
               <div style={{ height: "4px", background: "#F0EDE6", borderRadius: "2px", overflow: "hidden" }}>
                 <div style={{ width: `${usagePct}%`, height: "100%", background: "#854F0B", borderRadius: "2px" }} />
               </div>
-              <div style={{ fontSize: "11px", color: "#888780", marginTop: "3px", textAlign: "right" }}>{stats.estimatedMB} MB / 50 MB</div>
+              <div style={{ fontSize: "11px", color: "#888780", marginTop: "3px", textAlign: "right" }}>{formatStorageSize(stats.estimatedMB)} / 50 MB</div>
             </div>
           </div>
 

@@ -12,23 +12,34 @@ import { getCategoryForDomain, extractDomain } from "~lib/domains"
 import { trackEvent } from "~lib/analytics"
 import { runCompression } from "~lib/compression"
 
-let activeTabId: number | null = null
-let activeStartTime: number | null = null
+// Active-tab tracking state lives in chrome.storage.session, NOT plain
+// module variables — MV3 service workers can be terminated by Chrome after
+// ~30s of inactivity and restart fresh on the next event, which would wipe
+// ordinary in-memory variables. storage.session persists across those
+// restarts (but is cleared when the browser itself closes, which is fine —
+// the onStartup orphan-recovery logic below handles that case separately).
 
-function startTracking(tabId: number) {
-  activeTabId = tabId
-  activeStartTime = Date.now()
+async function getActiveState(): Promise<{ activeTabId: number | null; activeStartTime: number | null }> {
+  const result = await chrome.storage.session.get(["activeTabId", "activeStartTime"])
+  return {
+    activeTabId: result.activeTabId ?? null,
+    activeStartTime: result.activeStartTime ?? null
+  }
+}
+
+async function startTracking(tabId: number) {
+  await chrome.storage.session.set({ activeTabId: tabId, activeStartTime: Date.now() })
 }
 
 async function stopTracking() {
+  const { activeTabId, activeStartTime } = await getActiveState()
   if (activeTabId !== null && activeStartTime !== null) {
     const elapsed = Date.now() - activeStartTime
     if (elapsed > 0) {
       await updateTabActiveTime(activeTabId, elapsed)
     }
   }
-  activeTabId = null
-  activeStartTime = null
+  await chrome.storage.session.set({ activeTabId: null, activeStartTime: null })
 }
 
 // ── Install ───────────────────────────────────────────────────────
@@ -53,7 +64,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const domain = extractDomain(tab.url)
   const settings = await getSettings()
 
-  if (settings.excludedDomains.includes(domain)) return
+  const normalizedExcluded = settings.excludedDomains.map(d => d.replace(/^www\./, ""))
+  if (normalizedExcluded.includes(domain)) return
 
   const existing = await getOpenTab(tabId)
 
@@ -72,7 +84,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   await stopTracking()
-  startTracking(tabId)
+  await startTracking(tabId)
 })
 
 // ── Window focus ──────────────────────────────────────────────────
@@ -82,7 +94,7 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
     await stopTracking()
   } else {
     const [activeTab] = await chrome.tabs.query({ active: true, windowId })
-    if (activeTab?.id) startTracking(activeTab.id)
+    if (activeTab?.id) await startTracking(activeTab.id)
   }
 })
 
@@ -90,6 +102,7 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 
 chrome.tabs.onRemoved.addListener(async (tabId) => {
 
+  const { activeTabId } = await getActiveState()
   if (activeTabId === tabId) await stopTracking()
 
   const meta = await getOpenTab(tabId)

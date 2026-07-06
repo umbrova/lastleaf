@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useClusters } from "./hooks/useClusters"
 import { Graph } from "./components/Graph"
 import { SidePanel } from "./components/SidePanel"
 import { OnboardingHint } from "./components/OnboardingHint"
 import type { Cluster } from "~lib/clustering"
 import { formatTime } from "~lib/clustering"
+import { getSettings, type Settings } from "~lib/storage"
 
 const LeafLogo = ({ size = 28 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 100 100">
@@ -70,6 +71,14 @@ const GearIcon = () => (
   </svg>
 )
 
+const InfoIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BA7517" strokeWidth="1.5" strokeLinecap="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="16" x2="12" y2="11"/>
+    <line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>
+)
+
 const MailIcon = () => (
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -81,6 +90,12 @@ export default function NewTab() {
   const { clusters, loading, totalTabs, totalTime, reload } = useClusters()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [scrollToTags, setScrollToTags] = useState(false)
+  const [settings, setSettings] = useState<Settings | null>(null)
+  const [showSettingsTip, setShowSettingsTip] = useState(false)
+
+  useEffect(() => {
+    getSettings().then(setSettings)
+  }, [])
 
   const selectedCluster: Cluster | null =
     clusters.find(c => c.id === selectedId) ?? null
@@ -147,6 +162,34 @@ export default function NewTab() {
               <DownloadIcon />
             </button>
           )}
+          <div
+            style={{ position: "relative", display: "flex", alignItems: "center" }}
+            onMouseEnter={() => setShowSettingsTip(true)}
+            onMouseLeave={() => setShowSettingsTip(false)}
+          >
+            <button
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#BA7517", display: "flex", alignItems: "center", padding: 0 }}
+              aria-label="Current settings"
+            >
+              <InfoIcon />
+            </button>
+            {showSettingsTip && settings && (
+              <div style={{
+                position: "absolute", top: "24px", right: 0, zIndex: 10,
+                background: "#ffffff", border: "0.5px solid #E8E5DE", borderRadius: "8px",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                padding: "10px 14px", minWidth: "210px",
+                fontSize: "11px", color: "#5F5E5A", lineHeight: 1.7
+              }}>
+                <div><span style={{ color: "#888780" }}>Min tab time:</span> {settings.minTabTime === 0 ? "Off — capture everything" : `${settings.minTabTime}s`}</div>
+                <div><span style={{ color: "#888780" }}>Retention:</span> {settings.retentionDays === 0 ? "Forever" : `${settings.retentionDays} days`}</div>
+                <div><span style={{ color: "#888780" }}>Excluded domains:</span> {settings.excludedDomains.length}</div>
+                <div style={{ borderTop: "0.5px solid #F0EDE6", marginTop: "6px", paddingTop: "6px", color: "#888780" }}>
+                  See the gear icon for full settings
+                </div>
+              </div>
+            )}
+          </div>
           <a
             href={chrome.runtime.getURL("src/options/index.html")}
             style={{ color: "#BA7517", display: "flex", alignItems: "center" }}

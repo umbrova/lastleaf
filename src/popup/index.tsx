@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getStorageStats } from "~lib/storage"
+import { getStorageStats, formatStorageSize } from "~lib/storage"
 
 const LeafLogo = ({ size = 28 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 100 100">
@@ -84,7 +84,7 @@ export default function Popup() {
         </div>
         <div style={{ width: "0.5px", height: "28px", background: "#E8E5DE" }} />
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "15px", fontWeight: 600, color: "#2C2C2A" }}>{stats ? `${stats.estimatedMB} MB` : "—"}</div>
+          <div style={{ fontSize: "15px", fontWeight: 600, color: "#2C2C2A" }}>{stats ? formatStorageSize(stats.estimatedMB) : "—"}</div>
           <div style={{ fontSize: "10px", color: "#BA7517", letterSpacing: "0.3px", marginTop: "1px" }}>STORAGE</div>
         </div>
       </div>

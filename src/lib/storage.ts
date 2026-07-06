@@ -100,7 +100,7 @@ export async function getRecentTabs(limitDays = 90): Promise<TabRecord[]> {
   return db.tabs
     .where("closedAt")
     .above(since)
-    .filter(t => !t.rescued)
+    .filter(t => !t.rescued && !t.buried)
     .sortBy("closedAt")
     .then(tabs => tabs.reverse())
 }
@@ -163,7 +163,16 @@ export async function getStorageStats(): Promise<{
   estimatedMB: number
 }> {
   const tabCount = await db.tabs.count()
-  // rough estimate: ~500 bytes per tab record
-  const estimatedMB = Math.round((tabCount * 500) / 1024 / 1024 * 10) / 10
+  // rough estimate: ~500 bytes per tab record — kept at full precision here;
+  // use formatStorageSize() for display so tiny amounts don't round to 0
+  const estimatedMB = (tabCount * 500) / 1024 / 1024
   return { tabCount, estimatedMB }
+}
+
+export function formatStorageSize(mb: number): string {
+  const kb = mb * 1024
+  if (kb < 1024) {
+    return `${kb < 10 ? kb.toFixed(1) : Math.round(kb)} KB`
+  }
+  return `${mb.toFixed(1)} MB`
 }

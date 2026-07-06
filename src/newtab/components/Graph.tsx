@@ -32,7 +32,7 @@ export function Graph({ clusters, selectedId, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
-  const [zoom, setZoom] = useState(1)
+  const [zoom, setZoom] = useState(1.15)
 
   const measure = useCallback(() => {
     if (!containerRef.current) return

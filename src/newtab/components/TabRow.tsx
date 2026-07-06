@@ -52,7 +52,7 @@ export function TabRow({ tab, defaultOpen = false, onAction }: Props) {
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
           </svg>
-          <span style={{ fontSize: "12px", color: "#5F5E5A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontSize: "12px", color: "rgb(186, 117, 23)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {tab.title || tab.url}
           </span>
         </div>
@@ -87,7 +87,7 @@ export function TabRow({ tab, defaultOpen = false, onAction }: Props) {
             </svg>
             <span style={{ fontSize: "11px", color: "#888780" }}>{formatClosedAt(tab.closedAt)}</span>
           </div>
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
             <button
               onClick={e => { e.stopPropagation(); handleReopen() }}
               style={{ fontSize: "11px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#BA7517", textDecoration: "underline", textUnderlineOffset: "2px", fontFamily: "inherit" }}
