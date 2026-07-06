@@ -64,8 +64,15 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const domain = extractDomain(tab.url)
   const settings = await getSettings()
 
-  const normalizedExcluded = settings.excludedDomains.map(d => d.replace(/^www\./, ""))
-  if (normalizedExcluded.includes(domain)) return
+  const isExcluded = settings.excludedDomains.some(entry => {
+    const e = entry.replace(/^www\./, "")
+    if (e.startsWith("*.")) {
+      const base = e.slice(2)
+      return domain === base || domain.endsWith("." + base)
+    }
+    return domain === e
+  })
+  if (isExcluded) return
 
   const existing = await getOpenTab(tabId)
 

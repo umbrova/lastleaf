@@ -76,10 +76,26 @@ export default function Options() {
     await setSetting(key, value)
   }
 
+  function normalizeDomain(input: string): string {
+    let d = input.trim().toLowerCase()
+    if (!d) return ""
+    try {
+      if (d.includes("://")) {
+        d = new URL(d).hostname
+      } else if (d.includes("/")) {
+        // no protocol but has a path, e.g. "myntra.com/some/path"
+        d = new URL(`https://${d}`).hostname
+      }
+    } catch {
+      // not parseable as a URL — treat input as already a bare domain
+    }
+    return d.replace(/^www\./, "")
+  }
+
   async function saveExcluded() {
     const domains = excludedInput
       .split(/[\n,]+/)
-      .map(d => d.trim().toLowerCase())
+      .map(normalizeDomain)
       .filter(Boolean)
     const unique = [...new Set(domains)]
     await update("excludedDomains", unique)
@@ -92,18 +108,23 @@ export default function Options() {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       const text = ev.target?.result as string
       const newDomains = text
         .split(/[\n,]+/)
-        .map(d => d.trim().toLowerCase())
+        .map(normalizeDomain)
         .filter(Boolean)
       const existing = excludedInput
         .split(/[\n,]+/)
-        .map(d => d.trim().toLowerCase())
+        .map(normalizeDomain)
         .filter(Boolean)
       const merged = [...new Set([...existing, ...newDomains])]
       setExcludedInput(merged.join("\n"))
+      // Save immediately — otherwise it's unclear to the user whether
+      // uploading alone was enough, or whether a separate Save click is needed
+      await update("excludedDomains", merged)
+      setSaveMsg("Saved")
+      setTimeout(() => setSaveMsg(""), 2000)
     }
     reader.readAsText(file)
     e.target.value = ""
@@ -171,7 +192,7 @@ export default function Options() {
           <div style={{ ...rowLast, flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
             <div>
               <div style={labelStyle}>Excluded domains</div>
-              <div style={subStyle}>Never capture tabs from these sites — one domain per line</div>
+              <div style={subStyle}>Never capture tabs from these sites — one per line. Paste a full URL or just the domain, either works. Use *.example.com to exclude all subdomains too.</div>
             </div>
             <textarea
               value={excludedInput}
@@ -191,7 +212,7 @@ export default function Options() {
                 onClick={() => fileRef.current?.click()}
                 style={{ fontSize: "12px", padding: "6px 14px", borderRadius: "7px", border: "0.5px solid #E0DDD6", background: "#ffffff", color: "#2C2C2A", cursor: "pointer", fontFamily: "inherit" }}
               >
-                Upload CSV
+                Upload CSV/TXT
               </button>
               <input ref={fileRef} type="file" accept=".csv,.txt" style={{ display: "none" }} onChange={handleCSVUpload} />
               {saveMsg && <span style={{ fontSize: "12px", color: "#1D9E75" }}>{saveMsg}</span>}
