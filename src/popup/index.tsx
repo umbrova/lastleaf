@@ -101,7 +101,7 @@ export default function Popup() {
       {/* Footer */}
       <div style={{ padding: "8px 16px", borderTop: "0.5px solid #F0EDE6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ fontSize: "11px", color: "#B4B2A9" }}>© 2026 Umbrova</span>
-        <span style={{ fontSize: "11px", color: "#B4B2A9" }}>v1.0.0</span>
+        <span style={{ fontSize: "11px", color: "#B4B2A9" }}>v{chrome.runtime.getManifest().version}</span>
       </div>
 
     </div>

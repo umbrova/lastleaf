@@ -270,7 +270,7 @@ export default function Options() {
           <div style={sectionLabel}>ABOUT</div>
           <div style={row}>
             <div style={{ ...labelStyle, fontWeight: 400 }}>Version</div>
-            <div style={subStyle}>1.0.0</div>
+            <div style={subStyle}>{chrome.runtime.getManifest().version}</div>
           </div>
           <div style={row}>
             <div style={{ ...labelStyle, fontWeight: 400 }}>Made by</div>
