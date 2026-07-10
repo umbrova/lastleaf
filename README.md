@@ -4,7 +4,7 @@
 
 A Chrome/Brave extension that quietly captures tabs you close, groups them by topic, and surfaces them as an interactive graph. Click the lastleaf icon in your toolbar to explore your tab graveyard.
 
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/omdnekdmeoccdhlmfdmfpfmkmoenado)](https://chromewebstore.google.com/detail/lastleaf/omdnekdmeoccdhlmfdmfpfmkmoenadol)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/omdnekdmeoccdhlmfdmfpfmkmoenadol)](https://chromewebstore.google.com/detail/lastleaf/omdnekdmeoccdhlmfdmfpfmkmoenadol)
 ---
 
 ## Tech stack
