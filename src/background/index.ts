@@ -9,7 +9,6 @@ import {
 } from "~lib/storage"
 import { extractKeywords } from "~lib/clustering"
 import { getCategoryForDomain, extractDomain } from "~lib/domains"
-import { trackEvent } from "~lib/analytics"
 import { runCompression } from "~lib/compression"
 
 // Active-tab tracking state lives in chrome.storage.session, NOT plain
@@ -46,11 +45,9 @@ async function stopTracking() {
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === "install") {
-    await trackEvent("install")
     chrome.tabs.create({ url: chrome.runtime.getURL("src/welcome/index.html") })
   }
   chrome.alarms.create("compress", { periodInMinutes: 60 * 24 })
-  chrome.alarms.create("dau", { periodInMinutes: 60 * 24 })
 })
 
 // ── Tab updated — primary tracking entry point ────────────────────
@@ -146,7 +143,6 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
     protected: false
   }
   await saveTabRecord(record)
-  await trackEvent("tab_buried")
   await updateBadgeCount()
 
 
@@ -173,7 +169,6 @@ async function updateBadgeCount() {
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "RESCUE_TAB") {
     chrome.tabs.create({ url: message.url })
-    trackEvent("tab_rescued")
     sendResponse({ ok: true })
   }
   return true
@@ -224,12 +219,10 @@ chrome.runtime.onStartup.addListener(async () => {
   }
 
   await updateBadgeCount()
-  await trackEvent("dau")
 })
 
 // ── Alarms ────────────────────────────────────────────────────────
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "compress") await runCompression()
-  if (alarm.name === "dau") await trackEvent("dau")
 })
