@@ -53,8 +53,7 @@ lastleaf/
 │       ├── storage.ts        # Dexie IndexedDB schema + chrome.storage.local settings
 │       ├── clustering.ts     # Keyword extraction, topic scoring, cluster building
 │       ├── domains.ts        # Domain → category lookup table
-│       ├── compression.ts    # 90-day compression of old tabs to summaries
-│       └── analytics.ts      # Anonymous event tracking via Vercel proxy
+│       └── compression.ts    # 90-day compression of old tabs to summaries
 ├── manifest.json             # Chrome MV3 manifest
 ├── vite.config.ts            # Vite + CRXJS config
 ├── tsconfig.json
@@ -71,19 +70,7 @@ lastleaf/
 npm install
 ```
 
-### 2. Environment variables
-
-Copy `.env.example` to `.env.local` and fill in your analytics URL (optional):
-
-```bash
-cp .env.example .env.local
-```
-
-```
-PLASMO_PUBLIC_ANALYTICS_URL=https://your-vercel-project.vercel.app/api/lastleaf/event
-```
-
-### 3. Generate extension icons
+### 2. Generate extension icons
 
 Open your browser console on any tab and paste:
 
@@ -118,13 +105,13 @@ sizes.forEach(s => {
 
 Copy the downloaded PNGs to `public/assets/`.
 
-### 4. Build
+### 3. Build
 
 ```bash
 npm run build
 ```
 
-### 5. Load in Chrome/Brave
+### 4. Load in Chrome/Brave
 
 1. Go to `chrome://extensions` or `brave://extensions`
 2. Enable **Developer mode**
@@ -155,17 +142,10 @@ All settings are stored in `chrome.storage.local` and shared across all extensio
 
 ---
 
-## Analytics (optional)
-
-Anonymous usage counters via Upstash Redis, proxied through a Vercel edge function in the private `lastleaf-server` repo. Events tracked: `install`, `tab_buried`, `tab_rescued`, `dau`. No PII collected.
-
----
-
 ## Privacy
 
 - All tab data stored locally in IndexedDB on your device
 - No page content ever read — only tab titles and URLs
-- Cloud sync and analytics are optional and transparent
 - Excluded domains list lets you block sensitive sites
 
 ---
