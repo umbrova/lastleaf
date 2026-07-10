@@ -46,12 +46,6 @@ const labelStyle: React.CSSProperties = { fontSize: "13px", fontWeight: 500, col
 const subStyle: React.CSSProperties = { fontSize: "12px", color: "#888780", marginTop: "2px" }
 const sectionLabel: React.CSSProperties = { fontSize: "11px", fontWeight: 600, color: "#BA7517", letterSpacing: "0.6px", marginBottom: "4px" }
 
-const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
-  <div onClick={onToggle} style={{ width: "36px", height: "20px", borderRadius: "10px", background: on ? "#854F0B" : "#D3D1C7", position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s" }}>
-    <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: on ? "#FAC775" : "#fff", position: "absolute", top: "3px", left: on ? "18px" : "3px", transition: "left 0.15s" }} />
-  </div>
-)
-
 export default function Options() {
   const [settings, setSettings] = useState<Settings | null>(null)
   const [stats, setStats] = useState({ tabCount: 0, estimatedMB: 0 })

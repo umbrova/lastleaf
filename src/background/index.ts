@@ -151,11 +151,6 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 // ── Badge count ───────────────────────────────────────────────────
 
 async function updateBadgeCount() {
-  const settings = await getSettings()
-  if (settings.toastEnabled) {
-    chrome.action.setBadgeText({ text: "" })
-    return
-  }
   const { db } = await import("~lib/storage")
   const today = new Date()
   today.setHours(0, 0, 0, 0)
